@@ -1,0 +1,1208 @@
+[
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:23:23.581"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:26:40.980"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:26:41.281"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:27:20.843"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:30:13.675"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:38:06.614"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:48:51.126"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:48:51.525"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:48:51.732"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:50:02.522"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:51:18.850"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:51:27.849"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:53:16.939"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:54:13.250"
+  },
+  {
+    "event": "ОНОВЛЕНО КНИГАРНЮ id=1 \"Емпік\" користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-13 19:58:04.623"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-13 19:58:05.629"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 07:42:03.420"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 07:42:28.681"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 07:46:17.354"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Наукова література\"],\"results\":41}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 07:46:52.609"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 09:41:39.937"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 09:41:41.249"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 09:43:03.381"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 09:43:07.997"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: denis (ID 2)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 09:52:36.322"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 09:52:37.166"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:08:48.025"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: denis (ID 2)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 10:08:57.199"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:08:58.320"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Художня література\"],\"results\":27}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:10:26.065"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Художня література\"],\"results\":27}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:05.024"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:09.429"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Поезія\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:21.704"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Поезія\"],\"results\":41}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:21.911"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Поезія\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:35.847"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:36.581"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Дитяча література\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:38.429"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Дитяча література\"],\"results\":46}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:11:38.609"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-14 10:16:43.095"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: admin (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 10:17:01.676"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Дитяча література\"],\"results\":46}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 10:17:02.245"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Дитяча література\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 10:17:04.248"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 10:17:04.436"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:40:57.956"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: admin (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 13:41:44.277"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:41:44.701"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:47:43.613"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:49:49.590"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:51:50.259"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:53:23.996"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: user2 (ID 3)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 13:53:30.602"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user2",
+    "user_id": null,
+    "time": "2026-04-14 13:53:31.057"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "user2",
+    "user_id": null,
+    "time": "2026-04-14 13:53:52.069"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: admin (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 13:54:16.436"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 13:54:17.198"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 14:00:13.273"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 18:55:02.211"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 18:55:16.779"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 18:58:57.088"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 19:02:13.797"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:26:22.479"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:39:02.047"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:44:42.926"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:46:11.575"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:48:28.561"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:53:34.261"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 20:55:39.400"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:21:10.968"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:25:30.835"
+  },
+  {
+    "event": "ОНОВЛЕНО КНИГАРНЮ id=1 \"Емпік\" користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 21:25:45.025"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:25:45.336"
+  },
+  {
+    "event": "ДОДАНО КНИГАРНЮ \"Qqq\" (id 101) користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 21:26:07.553"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":101}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:26:08.298"
+  },
+  {
+    "event": "ВИДАЛЕНО КНИГАРНЮ id=101 користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 21:26:30.175"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:26:30.520"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:32:10.139"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:42:37.200"
+  },
+  {
+    "event": "ОНОВЛЕНО КНИГАРНЮ id=2 \"Махаон\" користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-14 21:43:30.373"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 21:43:30.642"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 22:11:13.810"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 22:15:12.161"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-14 23:07:12.037"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 13:44:24.834"
+  },
+  {
+    "event": "ОНОВЛЕНО КНИГАРНЮ id=3 \"Ukrlib\" користувачем admin",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-15 13:45:13.207"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 13:45:13.681"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 14:59:38.438"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Бізнес\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 14:59:47.416"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Бізнес\"],\"results\":49}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 14:59:47.657"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Бізнес\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 14:59:48.508"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 14:59:48.608"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 15:03:28.839"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: denis (ID 2)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-15 15:03:38.717"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:03:39.560"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Y\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.017"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Ya\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.438"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Ya\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.514"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Yak\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.756"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Yak\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.781"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Yaka\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.823"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Yaka\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:14.845"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Y\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:15.166"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Yak\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.490"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Yak\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.568"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Ya\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.599"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Ya\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.750"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"Y\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.786"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"Y\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.801"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"(очищено)\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:19.991"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:20.359"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"я\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:22.596"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"я\",\"results\":22}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:22.771"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"як\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.106"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"як\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.137"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"яка\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.286"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"яка\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.338"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"якаб\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.539"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"якаб\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:23.569"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"яка\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:57.620"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"як\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:57.730"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"яка\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:57.759"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"як\",\"results\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:57.767"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"я\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:57.904"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"name\":\"я\",\"results\":22}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:58.002"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА НАЗВА {\"value\":\"(очищено)\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:58.099"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:04:58.430"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"В\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:04.710"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Ву\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:04.900"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"В\",\"results\":97}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:04.969"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вул\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.086"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вули\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.094"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиц\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.407"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Ву\",\"results\":73}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.411"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиця\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.443"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вул\",\"results\":73}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.444"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вули\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.591"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиця\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:05.636"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиц\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:06.363"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиця\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:13.165"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиця М\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:13.169"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиця \",\"results\":36}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:13.331"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиця М\",\"results\":3}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:13.371"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиця\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:18.804"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиця \",\"results\":36}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:18.895"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиця\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.235"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вул\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.408"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиця\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.651"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вулиц\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.654"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Вули\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.657"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"Ву\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.668"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"В\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.670"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА АДРЕСА {\"value\":\"(очищено)\"}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:19.673"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вулиц\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.256"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Ву\",\"results\":73}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.262"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вули\",\"results\":67}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.461"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"Вул\",\"results\":73}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.464"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"address\":\"В\",\"results\":97}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.476"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:06:20.564"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Наукова література\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:07:41.435"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Наукова література\"],\"results\":41}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:07:41.588"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Наукова література\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:07:54.129"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:07:54.511"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Наукова література\"],\"results\":41}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:13:19.113"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-15 15:16:14.016"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: admin (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-15 15:16:21.983"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Наукова література\"],\"results\":41}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 15:16:22.187"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-15 15:28:27.733"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-18 14:41:44.350"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-18 14:42:20.343"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: denis (ID 2)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 15:18:09.521"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-18 15:18:10.653"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "denis",
+    "user_id": null,
+    "time": "2026-04-18 15:18:27.307"
+  },
+  {
+    "event": "НЕВДАЛИЙ ВХІД: admin — користувача не знайдено",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:34:26.835"
+  },
+  {
+    "event": "РЕЄСТРАЦІЯ УСПІШНА: user1 (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:34:41.459"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":4}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:34:42.374"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:34:51.640"
+  },
+  {
+    "event": "НЕВДАЛИЙ ВХІД: admin — користувача не знайдено",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:34:53.412"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: user1 (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:34:57.083"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":4}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:34:57.904"
+  },
+  {
+    "event": "НЕВДАЛИЙ ВХІД: Q — користувача не знайдено",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:43:30.499"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: user1 (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:43:43.584"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":0}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:43:44.217"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:47:48.926"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Дитяча література\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:53:22.236"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Дитяча література\"],\"results\":0}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:53:22.839"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Дитяча література\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:53:23.902"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:53:25.212"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:53:36.950"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Наукова література\",\"action\":\"увімкнено\",\"now_selected_count\":1}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:55:12.469"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"departments\":[\"Наукова література\"],\"results\":49}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:55:13.798"
+  },
+  {
+    "event": "ЗМІНА ФІЛЬТРА ВІДДІЛ {\"department\":\"Наукова література\",\"action\":\"вимкнено\",\"now_selected_count\":0}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:55:15.066"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:55:16.293"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "user1",
+    "user_id": null,
+    "time": "2026-04-18 16:56:12.771"
+  },
+  {
+    "event": "НЕВДАЛИЙ ВХІД: user1 — користувача не знайдено",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:56:20.472"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: user2 (ID 5)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:56:25.772"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "user2",
+    "user_id": null,
+    "time": "2026-04-18 16:56:27.731"
+  },
+  {
+    "event": "ВИХІД {}",
+    "user": "user2",
+    "user_id": null,
+    "time": "2026-04-18 16:57:29.640"
+  },
+  {
+    "event": "ВХІД УСПІШНИЙ: admin (ID 1)",
+    "user": "system",
+    "user_id": null,
+    "time": "2026-04-18 16:57:36.075"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-18 16:57:38.101"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-20 16:51:42.486"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-20 16:51:52.526"
+  },
+  {
+    "event": "ПОШУК КНИГАРЕНЬ {\"results\":100}",
+    "user": "admin",
+    "user_id": null,
+    "time": "2026-04-20 16:52:42.001"
+  }
+]
