@@ -11,11 +11,10 @@ const os = require('os');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/guide.pdf', express.static(path.join(__dirname, 'guide.pdf')));
 
-// Логування активності
 const LOG_FILE = path.join(__dirname, 'activity_log.json');
 
 function logActivity(event, username = 'system', userId = null) {
@@ -39,7 +38,6 @@ function logActivity(event, username = 'system', userId = null) {
     console.log(`[LOG] ${entry.event} | user: ${entry.user} | time: ${entry.time}`);
 }
 
-// Конфігурація бази даних (PostgreSQL)
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
@@ -57,7 +55,6 @@ async function initDatabase() {
 
 async function createTables() {
     try {
-        // Таблиця користувачів
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Users (
                 id SERIAL PRIMARY KEY,
@@ -67,7 +64,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця книгарень
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Bookstores (
                 id SERIAL PRIMARY KEY,
@@ -81,7 +77,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця відділів
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Departments (
                 id SERIAL PRIMARY KEY,
@@ -89,7 +84,6 @@ async function createTables() {
             )
         `);
 
-        // Зв'язок багато-до-багатьох
         await pool.query(`
             CREATE TABLE IF NOT EXISTS BookstoreDepartments (
                 bookstore_id INT NOT NULL REFERENCES Bookstores(id) ON DELETE CASCADE,
@@ -98,7 +92,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця оцінок
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Ratings (
                 id SERIAL PRIMARY KEY,
@@ -110,7 +103,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця коментарів
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Comments (
                 id SERIAL PRIMARY KEY,
@@ -124,7 +116,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця переглядів
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Views (
                 id SERIAL PRIMARY KEY,
@@ -134,7 +125,6 @@ async function createTables() {
             )
         `);
 
-        // Таблиця улюблених
         await pool.query(`
             CREATE TABLE IF NOT EXISTS UserFavorites (
                 userid INT NOT NULL REFERENCES Users(id) ON DELETE CASCADE,
@@ -143,7 +133,6 @@ async function createTables() {
             )
         `);
 
-        // Початкові відділи
         const deptCount = await pool.query('SELECT COUNT(*) as count FROM Departments');
         if (parseInt(deptCount.rows[0].count) === 0) {
             const departments = [
@@ -157,7 +146,6 @@ async function createTables() {
             console.log('✅ Додано базові відділи');
         }
 
-        // Тестові книгарні
         const storeCount = await pool.query('SELECT COUNT(*) as count FROM Bookstores');
         if (parseInt(storeCount.rows[0].count) === 0) {
             await insertSampleData();
@@ -214,9 +202,6 @@ async function insertSampleData() {
     }
 }
 
-// ────────────────────────────────────────────────
-// Auth routes
-// ────────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -279,9 +264,6 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Логування клієнтських подій
-// ────────────────────────────────────────────────
 app.post('/api/log/event', (req, res) => {
     const { username, userId, event, details } = req.body;
     if (!username || typeof username !== 'string') {
@@ -297,9 +279,6 @@ app.post('/api/log/event', (req, res) => {
     res.status(204).send();
 });
 
-// ────────────────────────────────────────────────
-// Логи (перегляд та очищення)
-// ────────────────────────────────────────────────
 app.post('/api/auth/logs', async (req, res) => {
     try {
         const { username } = req.body;
@@ -348,9 +327,6 @@ app.delete('/api/auth/logs/:index', (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Departments
-// ────────────────────────────────────────────────
 app.get('/api/departments', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, name FROM Departments ORDER BY name');
@@ -361,9 +337,6 @@ app.get('/api/departments', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Bookstores
-// ────────────────────────────────────────────────
 const { transliterate } = require('./utils/transliterate');
 
 app.get('/api/bookstores', async (req, res) => {
@@ -418,7 +391,6 @@ app.get('/api/bookstores', async (req, res) => {
 
         const storesResult = await pool.query(query, values);
 
-        // Додаємо відділи та рейтинг до кожної книгарні
         let bookstores = await Promise.all(
             storesResult.rows.map(async (store) => {
                 const depts = await pool.query(
@@ -524,9 +496,6 @@ app.delete('/api/bookstores/:id', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Views
-// ────────────────────────────────────────────────
 app.post('/api/bookstores/:id/view', async (req, res) => {
     const storeId = req.params.id;
     const { userId } = req.body;
@@ -561,9 +530,6 @@ app.get('/api/bookstores/:id/views', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Ratings & Comments
-// ────────────────────────────────────────────────
 app.get('/api/bookstores/:id/ratings', async (req, res) => {
     const storeId = req.params.id;
     try {
@@ -661,9 +627,6 @@ app.delete('/api/bookstores/:id/comment/:commentId', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Favorites
-// ────────────────────────────────────────────────
 app.post('/api/bookstores/:id/favorite', async (req, res) => {
     const storeId = req.params.id;
     const { userId, action } = req.body;
@@ -729,9 +692,6 @@ app.get('/api/users/:userId/favorites', async (req, res) => {
     }
 });
 
-// ────────────────────────────────────────────────
-// Admin Charts
-// ────────────────────────────────────────────────
 app.get('/api/admin/charts/ratings-distribution', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -847,7 +807,6 @@ app.get('/api/admin/charts/user-views-time-series', async (req, res) => {
     }
 });
 
-// Запуск сервера
 initDatabase().then(() => {
     const getLocalIP = () => {
         const ifaces = os.networkInterfaces();
