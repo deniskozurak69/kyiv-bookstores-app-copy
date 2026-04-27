@@ -345,7 +345,7 @@ app.get('/api/bookstores', async (req, res) => {
         const values = [];
         let idx = 1;
         let query = `
-            SELECT DISTINCT b.id, b.name, b.address, b.hours, b.latitude, b.longitude
+            SELECT DISTINCT b.id, b.name, b.name_eng, b.address, b.address_eng, b.hours, b.latitude, b.longitude
             FROM Bookstores b
             LEFT JOIN BookstoreDepartments bd ON b.id = bd.bookstore_id
             LEFT JOIN Departments d ON bd.department_id = d.id
