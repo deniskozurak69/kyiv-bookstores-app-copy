@@ -422,14 +422,14 @@ app.get('/api/bookstores', async (req, res) => {
 
 app.post('/api/bookstores', async (req, res) => {
     try {
-        const { name, address, hours, latitude, longitude, departments, username } = req.body;
+        const { name, name_eng, address, address_eng, hours, latitude, longitude, departments, username } = req.body;
         if (!name || !address || !hours) {
             return res.status(400).json({ error: 'Обов\'язкові поля: назва, адреса, години роботи' });
         }
         const result = await pool.query(
-            `INSERT INTO Bookstores (name, address, hours, latitude, longitude)
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [name, address, hours, latitude || null, longitude || null]
+            `INSERT INTO Bookstores (name, name_eng, address, address_eng, hours, latitude, longitude)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [name, name_eng || null, address, address_eng || null, hours, latitude || null, longitude || null]
         );
         const bookstore = result.rows[0];
         if (departments?.length) {
@@ -454,13 +454,13 @@ app.post('/api/bookstores', async (req, res) => {
 app.put('/api/bookstores/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, address, hours, latitude, longitude, departments, username } = req.body;
+        const { name, name_eng, address, address_eng, hours, latitude, longitude, departments, username } = req.body;
         await pool.query(
             `UPDATE Bookstores
-             SET name = $1, address = $2, hours = $3,
-                 latitude = $4, longitude = $5, updated_at = NOW()
-             WHERE id = $6`,
-            [name, address, hours, latitude || null, longitude || null, id]
+             SET name = $1, name_eng = $2, address = $3, address_eng = $4,
+                 hours = $5, latitude = $6, longitude = $7, updated_at = NOW()
+             WHERE id = $8`,
+            [name, name_eng || null, address, address_eng || null, hours, latitude || null, longitude || null, id]
         );
         await pool.query('DELETE FROM BookstoreDepartments WHERE bookstore_id = $1', [id]);
         if (departments?.length) {
