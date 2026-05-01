@@ -274,17 +274,6 @@ export default function StoreDetail({ bookstores, currentUser, refreshFavorites 
                                 </p>
                             </div>
                         </div>
-                        {store.latitude && store.longitude && (
-                            <div className="flex items-start gap-3">
-                                <MapPin size={24} className={`mt-1 shrink-0 ${isDark ? 'text-indigo-400' : 'text-indigo-500'}`} />
-                                <div>
-                                    <p className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{t.coordinates}</p>
-                                    <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
-                                        {parseFloat(store.latitude).toFixed(6)}, {parseFloat(store.longitude).toFixed(6)}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
                     </div>
                     <div>
                         <p className={`font-medium mb-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{t.departments}</p>
@@ -304,6 +293,30 @@ export default function StoreDetail({ bookstores, currentUser, refreshFavorites 
 
                 {/* Карта */}
                 <StoreDetailMap store={store} userPosition={state?.userPosition || null} />
+
+                {/* Форма коментаря */}
+                {currentUser && (
+                    <div className="mt-12">
+                        <h3 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
+                            {t.leaveComment}
+                        </h3>
+                        <textarea value={comment} onChange={e => setComment(e.target.value)}
+                            placeholder={t.commentPlaceholder}
+                            className={`w-full p-4 border rounded-lg focus:ring-2 focus:ring-indigo-500 min-h-[140px] resize-y transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-700'}`}
+                        />
+                        <button onClick={handleComment}
+                            disabled={!comment.trim() || commentLoading}
+                            className={`mt-4 px-8 py-3 rounded-lg text-white font-medium transition flex items-center gap-2 ${comment.trim() && !commentLoading
+                                ? isDark ? 'bg-indigo-700 hover:bg-indigo-600' : 'bg-indigo-600 hover:bg-indigo-700'
+                                : 'bg-gray-400 cursor-not-allowed'
+                                }`}>
+                            {commentLoading
+                                ? <><Loader2 size={20} className="animate-spin" />{t.sending}</>
+                                : <><Send size={20} />{t.sendComment}</>
+                            }
+                        </button>
+                    </div>
+                )}
 
                 {/* Коментарі */}
                 <div className="mt-12">
@@ -406,30 +419,6 @@ export default function StoreDetail({ bookstores, currentUser, refreshFavorites 
                                     </p>
                                 </div>
                             ))}
-                        </div>
-                    )}
-
-                    {/* Форма коментаря */}
-                    {currentUser && (
-                        <div className="mt-12">
-                            <h3 className={`text-xl font-semibold mb-4 ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>
-                                {t.leaveComment}
-                            </h3>
-                            <textarea value={comment} onChange={e => setComment(e.target.value)}
-                                placeholder={t.commentPlaceholder}
-                                className={`w-full p-4 border rounded-lg focus:ring-2 focus:ring-indigo-500 min-h-[140px] resize-y transition-colors ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-700'}`}
-                            />
-                            <button onClick={handleComment}
-                                disabled={!comment.trim() || commentLoading}
-                                className={`mt-4 px-8 py-3 rounded-lg text-white font-medium transition flex items-center gap-2 ${comment.trim() && !commentLoading
-                                        ? isDark ? 'bg-indigo-700 hover:bg-indigo-600' : 'bg-indigo-600 hover:bg-indigo-700'
-                                        : 'bg-gray-400 cursor-not-allowed'
-                                    }`}>
-                                {commentLoading
-                                    ? <><Loader2 size={20} className="animate-spin" />{t.sending}</>
-                                    : <><Send size={20} />{t.sendComment}</>
-                                }
-                            </button>
                         </div>
                     )}
                 </div>

@@ -416,12 +416,6 @@ export default function AdminMode({
                                             </span>
                                         )}
                                     </div>
-
-                                    {store.latitude && store.longitude && (
-                                        <div className={`mt-3 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                            {t.coordinates}: {parseFloat(store.latitude).toFixed(5)}, {parseFloat(store.longitude).toFixed(5)}
-                                        </div>
-                                    )}
                                 </div>
                             ))
                         )}

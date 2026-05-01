@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
     BookOpen, Search, MapPin, Star, MessageCircle, BarChart2,
     Bot, Moon, ChevronRight, ChevronDown, ChevronUp, X, ArrowLeft,
-    Info, HelpCircle, UserCheck, Map, Heart, ShieldCheck, Play
+    Info, HelpCircle, UserCheck, Map, Heart, ShieldCheck, Play, Lock, FileText
 } from "lucide-react";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -15,6 +15,7 @@ const sections = [
         bg: "#eef2ff",
         title: "Початок роботи",
         subtitle: "Реєстрація та вхід",
+        images: ["start1", "start2"], // Додано фото
         content: [
             {
                 heading: "Реєстрація",
@@ -33,6 +34,7 @@ const sections = [
         bg: "#e0f2fe",
         title: "Пошук книгарень",
         subtitle: "Фільтри та результати",
+        images: ["search1", "search2"], // Додано фото
         content: [
             {
                 heading: "Пошук за назвою та адресою",
@@ -59,6 +61,7 @@ const sections = [
         bg: "#d1fae5",
         title: "Картка книгарні",
         subtitle: "Деталі, карта, відгуки",
+        images: ["details1", "details2", "details3", "details4"], // Додано фото
         content: [
             {
                 heading: "Інформація",
@@ -85,6 +88,7 @@ const sections = [
         bg: "#fef3c7",
         title: "Рейтинг та оцінки",
         subtitle: "Як оцінити книгарню",
+        images: ["rating"], // Додано фото
         content: [
             {
                 heading: "Загальний рейтинг",
@@ -103,6 +107,7 @@ const sections = [
         bg: "#ede9fe",
         title: "Діаграми",
         subtitle: "Статистика книгарень",
+        images: ["charts1", "charts2", "charts3"], // Додано фото
         content: [
             {
                 heading: "Як відкрити",
@@ -125,6 +130,7 @@ const sections = [
         bg: "#fce7f3",
         title: "AI-асистент",
         subtitle: "Розумний підбір на базі Gemini",
+        images: ["ai1", "ai2"], // Додано фото
         content: [
             {
                 heading: "Як запустити",
@@ -211,7 +217,237 @@ const eulaContent = [
     }
 ];
 
+const privacyContent = {
+    ua: [
+        {
+            title: "1. Яку інформацію ми збираємо",
+            points: [
+                "Ім'я користувача (логін) — при реєстрації облікового запису.",
+                "Пароль — зберігається у зашифрованому вигляді (хеш).",
+                "Відгуки та коментарі — текст, що ви публікуєте в Застосунку.",
+                "Оцінки книгарень.",
+                "Дані про перегляди (статистика) та технічна інформація пристрою.",
+                "Геолокація (тільки за згодою) для маршрутів."
+            ]
+        },
+        {
+            title: "2. Як ми використовуємо дані",
+            text: "Дані використовуються для ідентифікації користувача, відображення контенту, аналізу використання, забезпечення безпеки та технічної підтримки."
+        },
+        {
+            title: "3. Передача даних третім особам",
+            text: "Ми не продаємо дані. Передача можлива лише постачальникам хмарних послуг, сервісу Gemini AI (лише текст запиту) та правоохоронним органам за законом."
+        },
+        {
+            title: "4. Права користувача",
+            points: [
+                "Доступ до своїх даних та їх виправлення.",
+                "Видалення облікового запису та даних.",
+                "Відкликання згоди на обробку.",
+                "Подання скарги до органів захисту даних."
+            ]
+        },
+        {
+            title: "5. Безпека та зберігання",
+            text: "Ми використовуємо хешування паролів та HTTPS. Дані зберігаються протягом дії акаунта і видаляються протягом 30 днів після його закриття."
+        }
+    ],
+    en: [
+        {
+            title: "1. Information We Collect",
+            points: [
+                "Username (login) — upon account registration.",
+                "Password — stored in encrypted form (hash).",
+                "Reviews and comments — text you post in the Application.",
+                "Bookstore ratings.",
+                "Usage statistics and device technical information.",
+                "Location data (only with consent) for routing."
+            ]
+        },
+        {
+            title: "2. How We Use Data",
+            text: "Data is used for user identification, content display, usage analysis, security, and technical support."
+        },
+        {
+            title: "3. Data Sharing",
+            text: "We do not sell data. Sharing is limited to cloud providers, Gemini AI (query text only), and law enforcement as required by law."
+        },
+        {
+            title: "4. Your Rights",
+            points: [
+                "Access and correction of personal data.",
+                "Deletion of account and associated data.",
+                "Withdrawal of consent.",
+                "Lodging complaints with data authorities."
+            ]
+        },
+        {
+            title: "5. Security & Retention",
+            text: "We use password hashing and HTTPS. Data is stored for the duration of the account and deleted within 30 days after account closure."
+        }
+    ]
+};
+
+const termsContent = {
+    ua: [
+        {
+            title: "1. Опис послуг",
+            text: "«Книгарні Києва» — каталог книгарень з функціями пошуку, фільтрації, маршрутів, AI-підбору та статистики."
+        },
+        {
+            title: "2. Реєстрація та акаунт",
+            points: [
+                "Один користувач — один безкоштовний акаунт.",
+                "Ви відповідальні за конфіденційність пароля.",
+                "Адміністрація може блокувати акаунт за порушення правил."
+            ]
+        },
+        {
+            title: "3. Правила поведінки",
+            text: "Заборонено публікувати образливий контент, неправдиву інформацію, спам або матеріали, що порушують закони України."
+        },
+        {
+            title: "4. Точність інформації",
+            text: "Дані про години роботи та адреси можуть змінюватися. Ми не несемо відповідальності за неточності."
+        },
+        {
+            title: "5. Зміни до Умов",
+            text: "Ми залишаємо за собою право оновлювати ці Умови. Продовження використання застосунку означає згоду з ними."
+        }
+    ],
+    en: [
+        {
+            title: "1. Description of Services",
+            text: "Kyiv Bookstores is a catalog providing search, filters, routes, AI assistance, and statistics."
+        },
+        {
+            title: "2. Registration and Account",
+            points: [
+                "One user — one free account.",
+                "You are responsible for your password confidentiality.",
+                "Accounts may be blocked for rule violations."
+            ]
+        },
+        {
+            title: "3. Conduct Rules",
+            text: "It is forbidden to post offensive content, false information, spam, or materials violating Ukrainian law."
+        },
+        {
+            title: "4. Accuracy of Information",
+            text: "Hours and addresses may change. We are not responsible for inaccuracies provided in the app."
+        },
+        {
+            title: "5. Changes to Terms",
+            text: "We reserve the right to modify these Terms. Continued usage implies acceptance of the new version."
+        }
+    ]
+};
+
 // ─── SUB-PAGES ────────────────────────────────────────────────────────────────
+
+function TermsPage({ onBack }) {
+    const [lang, setLang] = useState('ua');
+    const content = termsContent[lang];
+
+    return (
+        <div className="min-h-screen bg-white pb-10">
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-3">
+                    <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                        <ArrowLeft size={20} className="text-gray-600" />
+                    </button>
+                    <p className="font-bold text-gray-900">{lang === 'ua' ? 'Умови надання послуг' : 'Terms of Service'}</p>
+                </div>
+                <button
+                    onClick={() => setLang(lang === 'ua' ? 'en' : 'ua')}
+                    className="text-xs font-bold bg-blue-50 px-3 py-1.5 rounded-lg text-blue-600"
+                >
+                    {lang === 'ua' ? 'EN' : 'UA'}
+                </button>
+            </div>
+            <div className="p-5 text-sm text-gray-700 leading-relaxed">
+                <div className="mb-6 p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
+                    <div className="flex items-center gap-2 mb-1 text-blue-900 font-bold">
+                        <FileText size={16} />
+                        <span>{lang === 'ua' ? 'Правила використання' : 'Usage Rules'}</span>
+                    </div>
+                    <p className="text-[11px] text-blue-700 opacity-80 tracking-widest uppercase">
+                        {lang === 'ua' ? 'Чинні з 1 травня 2025' : 'Effective May 1, 2025'}
+                    </p>
+                </div>
+
+                {content.map((section, idx) => (
+                    <div key={idx} className="mb-6">
+                        <h3 className="font-bold text-gray-900 mb-2">{section.title}</h3>
+                        {section.text && <p className="mb-2">{section.text}</p>}
+                        {section.points && (
+                            <ul className="list-disc pl-5 space-y-1">
+                                {section.points.map((p, i) => <li key={i}>{p}</li>)}
+                            </ul>
+                        )}
+                    </div>
+                ))}
+
+                <div className="mt-10 pt-6 border-t border-gray-100">
+                    <p className="font-bold">{lang === 'ua' ? 'Підтримка:' : 'Support:'}</p>
+                    <p className="text-blue-600">support@kyiv-bookstores-app.com</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function PrivacyPage({ onBack }) {
+    const [lang, setLang] = useState('ua');
+    const content = privacyContent[lang];
+
+    return (
+        <div className="min-h-screen bg-white pb-10">
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-3">
+                    <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                        <ArrowLeft size={20} className="text-gray-600" />
+                    </button>
+                    <p className="font-bold text-gray-900">{lang === 'ua' ? 'Політика конфіденційності' : 'Privacy Policy'}</p>
+                </div>
+                <button
+                    onClick={() => setLang(lang === 'ua' ? 'en' : 'ua')}
+                    className="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-lg text-gray-600 uppercase tracking-wider"
+                >
+                    {lang === 'ua' ? 'EN' : 'UA'}
+                </button>
+            </div>
+            <div className="p-5 text-sm text-gray-700 leading-relaxed">
+                <div className="mb-6 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <div className="flex items-center gap-2 mb-1 text-indigo-900 font-bold">
+                        <Lock size={16} />
+                        <span>{lang === 'ua' ? 'Захист ваших даних' : 'User Data Protection'}</span>
+                    </div>
+                    <p className="text-[11px] text-indigo-700 opacity-80 uppercase tracking-widest">
+                        {lang === 'ua' ? 'Дата набрання чинності: 1 травня 2025' : 'Effective date: May 1, 2025'}
+                    </p>
+                </div>
+
+                {content.map((section, idx) => (
+                    <div key={idx} className="mb-6">
+                        <h3 className="font-bold text-gray-900 mb-2">{section.title}</h3>
+                        {section.text && <p className="mb-2">{section.text}</p>}
+                        {section.points && (
+                            <ul className="list-disc pl-5 space-y-1">
+                                {section.points.map((p, i) => <li key={i}>{p}</li>)}
+                            </ul>
+                        )}
+                    </div>
+                ))}
+
+                <div className="mt-10 pt-6 border-t border-gray-100">
+                    <p className="font-bold">{lang === 'ua' ? 'Контакти з питань приватності:' : 'Privacy inquiries:'}</p>
+                    <p className="text-indigo-600">support@kyiv-bookstores-app.com</p>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function EULAPage({ onBack }) {
     return (
@@ -251,7 +487,8 @@ function EULAPage({ onBack }) {
 
 function SectionPage({ section, onBack }) {
     return (
-        <div className="min-h-screen bg-gray-50 pb-10">
+        <div className="min-h-screen bg-gray-50 pb-20">
+            {/* ШАПКА */}
             <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shadow-sm">
                 <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
                     <ArrowLeft size={20} className="text-gray-600" />
@@ -264,6 +501,8 @@ function SectionPage({ section, onBack }) {
                     <p className="text-xs text-gray-500">{section.subtitle}</p>
                 </div>
             </div>
+
+            {/* КОНТЕНТ (ТЕКСТ) */}
             <div className="px-4 pt-6 space-y-4">
                 {section.content.map((item, i) => (
                     <div key={i} className="bg-white rounded-2xl p-5 shadow-sm">
@@ -277,6 +516,25 @@ function SectionPage({ section, onBack }) {
                     </div>
                 ))}
             </div>
+
+            {/* ГАЛЕРЕЯ СКРІНШОТІВ (НОВИЙ БЛОК) */}
+            {section.images && section.images.length > 0 && (
+                <div className="px-4 mt-8">
+                    <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-1">Скріншоти інструкції</h2>
+                    <div className={`grid gap-4 ${section.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {section.images.map((imgName, idx) => (
+                            <div key={idx} className="bg-gray-200 rounded-2xl overflow-hidden shadow-sm border-2 border-white aspect-[9/16]">
+                                <img
+                                    src={`/images/${imgName}.jpg`}
+                                    alt={`Step ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400x700?text=Image+Not+Found'; }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -325,6 +583,8 @@ export default function GuidePage({ onBack }) {
 
     if (activePage === "faq") return <FAQPage onBack={() => setActivePage(null)} />;
     if (activePage === "eula") return <EULAPage onBack={() => setActivePage(null)} />;
+    if (activePage === "privacy") return <PrivacyPage onBack={() => setActivePage(null)} />;
+    if (activePage === "terms") return <TermsPage onBack={() => setActivePage(null)} />;
     if (activeSection) return <SectionPage section={activeSection} onBack={() => setActivePage(null)} />;
 
     return (
@@ -355,41 +615,6 @@ export default function GuidePage({ onBack }) {
                     {["Пошук", "Карта", "Рейтинги", "AI"].map((tag) => (
                         <span key={tag} className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-medium">{tag}</span>
                     ))}
-                </div>
-            </div>
-
-            {/* ГАЛЕРЕЯ ФОТО (Пошук у public/images/) */}
-            <div className="mt-6">
-                <h2 className="px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Галерея застосунку</h2>
-                <div className="flex overflow-x-auto gap-4 px-4 pb-4 snap-x no-scrollbar">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="flex-shrink-0 w-48 aspect-[9/16] bg-gray-200 rounded-2xl shadow-sm snap-center border-2 border-white overflow-hidden">
-                            <img
-                                src={`/images/photo${i}.jpg`}
-                                alt={`Screen ${i}`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => { e.target.src = 'https://via.placeholder.com/400x700?text=Image+Missing'; }}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* ВІДЕО-ДЕМОНСТРАЦІЯ (Пошук у public/images/) */}
-            <div className="mx-4 mt-4 bg-white rounded-3xl p-5 shadow-sm border border-indigo-50">
-                <div className="flex items-center gap-2 mb-4">
-                    <Play size={16} className="text-indigo-500" />
-                    <h2 className="font-semibold text-gray-800 text-sm">Відео-огляд</h2>
-                </div>
-                <div className="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center group">
-                    <video
-                        controls
-                        className="w-full h-full object-cover"
-                        poster="/images/photo1.jpg" // Використовує перше фото як заставку
-                    >
-                        <source src="/images/video.mp4" type="video/mp4" />
-                        Ваш браузер не підтримує відео.
-                    </video>
                 </div>
             </div>
 
@@ -431,6 +656,7 @@ export default function GuidePage({ onBack }) {
             <div className="px-4 mt-8 space-y-3">
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">Підтримка та право</h2>
 
+                {/* FAQ */}
                 <button onClick={() => setActivePage("faq")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-50 text-amber-500"><HelpCircle size={20} /></div>
                     <div className="flex-1">
@@ -440,7 +666,28 @@ export default function GuidePage({ onBack }) {
                     <ChevronRight size={18} className="text-gray-300 flex-shrink-0" />
                 </button>
 
-                <button onClick={() => setActivePage("eula")} className="w-full bg-indigo-50/50 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left group active:scale-95 transition-transform">
+                {/* PRIVACY POLICY */}
+                <button onClick={() => setActivePage("privacy")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                    <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-indigo-50 text-indigo-600"><Lock size={20} /></div>
+                    <div className="flex-1">
+                        <p className="font-semibold text-gray-900 text-sm">Політика конфіденційності</p>
+                        <p className="text-xs text-gray-500">Privacy Policy</p>
+                    </div>
+                    <ChevronRight size={18} className="text-gray-300 flex-shrink-0" />
+                </button>
+
+                {/* TERMS OF SERVICE */}
+                <button onClick={() => setActivePage("terms")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                    <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600"><FileText size={20} /></div>
+                    <div className="flex-1">
+                        <p className="font-semibold text-gray-900 text-sm">Умови надання послуг</p>
+                        <p className="text-xs text-gray-500">Terms of Service</p>
+                    </div>
+                    <ChevronRight size={18} className="text-gray-300 flex-shrink-0" />
+                </button>
+
+                {/* EULA */}
+                <button onClick={() => setActivePage("eula")} className="w-full bg-indigo-50/30 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left group active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-white text-indigo-600 shadow-sm"><ShieldCheck size={20} /></div>
                     <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm group-hover:text-indigo-700 transition-colors">Ліцензійна угода (EULA)</p>

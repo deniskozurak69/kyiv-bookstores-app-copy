@@ -459,11 +459,6 @@ export default function UserMode({
                                                 </span>
                                             )}
                                         </div>
-                                        {store.latitude && store.longitude && (
-                                            <div className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                                                📍 {parseFloat(store.latitude).toFixed(4)}, {parseFloat(store.longitude).toFixed(4)}
-                                            </div>
-                                        )}
                                     </div>
                                 ))
                             )}
