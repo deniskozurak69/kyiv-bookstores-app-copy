@@ -172,7 +172,7 @@ export const translations = {
         unknown: 'Невідомо',
         viewsCount: 'Кількість переглядів',
         hoursOfDay: 'Години доби',
-        days: { Mo: 'Пн', Tu: 'Вт', We: 'Ср', Th: 'Чт', Fr: 'Пт', Sa: 'Сб', Su: 'Нд' },
+        daysAxis: 'Дні',
         period24h: '24 години',
         period7d: '7 днів',
         ratingDistribution: 'Розподіл книгарень за рейтингом',
@@ -181,7 +181,6 @@ export const translations = {
         noData: 'Немає даних',
         noViewsForPeriod: 'Немає переглядів за обраний період',
         noUserViewsForPeriod: 'Немає переглядів користувачів за обраний період',
-
 
         // LogsPanel
         logsTitle: 'Логи активності',
@@ -209,8 +208,10 @@ export const translations = {
         logsEmpty: 'Логи порожні. Натисніть «Оновити».',
         noLogsForFilter: 'Нічого не знайдено за обраними фільтрами.',
 
-
         // AdminMode
+        pickOnMap: 'Обрати на карті',
+        hideMap: 'Сховати карту',
+        clickToSetMarker: 'Клікніть на карті щоб встановити маркер місцезнаходження',
         editBookstoreTitle: 'Редагувати книгарню',
         addBookstoreTitle: 'Додати нову книгарню',
         nameUk: 'Назва (укр)',
@@ -418,6 +419,7 @@ export const translations = {
         unknown: 'Unknown',
         viewsCount: 'Number of views',
         hoursOfDay: 'Hours of day',
+        daysAxis: 'Days',
         period24h: '24 hours',
         period7d: '7 days',
         ratingDistribution: 'Bookstores by rating',
@@ -426,7 +428,6 @@ export const translations = {
         noData: 'No data',
         noViewsForPeriod: 'No views for selected period',
         noUserViewsForPeriod: 'No user views for selected period',
-
 
         // LogsPanel
         logsTitle: 'Activity Logs',
@@ -454,8 +455,10 @@ export const translations = {
         logsEmpty: 'Logs are empty. Click Refresh.',
         noLogsForFilter: 'Nothing found for selected filters.',
 
-
         // AdminMode
+        pickOnMap: 'Pick on map',
+        hideMap: 'Hide map',
+        clickToSetMarker: 'Click on the map to set the location marker',
         editBookstoreTitle: 'Edit bookstore',
         addBookstoreTitle: 'Add new bookstore',
         nameUk: 'Name (Ukrainian)',

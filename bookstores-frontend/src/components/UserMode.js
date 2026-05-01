@@ -137,61 +137,93 @@ export default function UserMode({
     }, [bookstores]);
 
     const filteredBookstores = useMemo(() => {
-        if (aiResults !== null) return aiResults;
-        if (loading || !bookstores?.length) return [];
+        // 1. Початкова перевірка завантаження
+        if (loading || !bookstores?.length) {
+            return [];
+        }
 
-        let result = bookstores;
+        // 2. Вибір джерела даних (AI або вся база)
+        let result = aiResults !== null ? aiResults : bookstores;
 
+        // --- ЛОГ ДЛЯ ПЕРЕВІРКИ ДАНИХ У КОНСОЛІ ---
+        console.log("=== DEBUG FILTER START ===");
+        console.log("Source:", aiResults !== null ? "AI" : "Database");
+        console.log("Total stores to filter:", result.length);
+        console.log("Full Data Snapshot:", result);
+        // ----------------------------------------
+
+        // 3. Фільтр за назвою (Name / Name_Eng)
+        const nameQuery = searchName.trim().toLowerCase();
+        if (nameQuery) {
+            result = result.filter(store => {
+                const uk = (store.name || "").toLowerCase();
+                const en = (store.name_eng || "").toLowerCase();
+
+                const match = uk.includes(nameQuery) || en.includes(nameQuery);
+
+                // Спеціальний лог для проблемних запитів
+                if (nameQuery === "akadem" || nameQuery === "star") {
+                    console.log(`Checking Store ID: ${store.id}`);
+                    console.log(`UK: "${uk}", EN: "${en}", Query: "${nameQuery}", Found: ${match}`);
+                }
+
+                return match;
+            });
+        }
+
+        // 4. Фільтр за адресою (Address / Address_Eng)
+        const addressQuery = searchAddress.trim().toLowerCase();
+        if (addressQuery) {
+            result = result.filter(store => {
+                const addrUk = (store.address || "").toLowerCase();
+                const addrEn = (store.address_eng || "").toLowerCase();
+                return addrUk.includes(addressQuery) || addrEn.includes(addressQuery);
+            });
+        }
+
+        // 5. Фільтр за обраними відділами
         if (selectedDepartments.length > 0) {
             result = result.filter(store =>
                 selectedDepartments.every(dept => store.departments?.includes(dept))
             );
         }
 
-        const nameQuery = searchName.trim().toLowerCase();
-        const addressQuery = searchAddress.trim().toLowerCase();
-
-        if (nameQuery) {
-            console.log(nameQuery);
-            result = result.filter(store => {
-                const nameUk = (store.name || '').toLowerCase();
-                const nameEn = (store.name_eng || '').toLowerCase();
-                const nameTranslit = transliterate(nameQuery).toLowerCase();
-                console.log(nameTranslit);
-                return nameUk.includes(nameQuery) || nameEn.includes(nameQuery) ||
-                    nameUk.includes(nameTranslit) || nameEn.includes(nameTranslit);
-            });
-        }
-
-        if (addressQuery) {
-            result = result.filter(store => {
-                const addrUk = (store.address || '').toLowerCase();
-                const addrEn = (store.address_eng || '').toLowerCase();
-                const addrTranslit = transliterate(addressQuery).toLowerCase();
-                return addrUk.includes(addressQuery) || addrEn.includes(addressQuery) ||
-                    addrUk.includes(addrTranslit) || addrEn.includes(addrTranslit);
-            });
-        }
-
+        // 6. Фільтр тільки улюблених
         if (onlyFavorites) {
-            if (!Array.isArray(favoriteStoreIds) || favoriteStoreIds.length === 0) return [];
+            if (!Array.isArray(favoriteStoreIds) || favoriteStoreIds.length === 0) {
+                return [];
+            }
             const favIdsSet = new Set(favoriteStoreIds.map(id => Number(id)));
             result = result.filter(store => favIdsSet.has(Number(store.id)));
         }
 
+        // 7. Фільтр за часом роботи
         if (filterDay && timeFrom && timeTo) {
             const from = timeToMinutes(timeFrom);
             const to = timeToMinutes(timeTo);
+
             if (from !== null && to !== null && from < to) {
                 result = result.filter(store => storeWorksAt(store.hours, filterDay, from, to));
             }
         }
 
+        console.log("Final filtered count:", result.length);
+        console.log("=== DEBUG FILTER END ===");
+
         return result;
+
     }, [
-        aiResults, bookstores, searchName, searchAddress, selectedDepartments,
-        searchIndex, bookstoresById, loading, onlyFavorites, favoriteStoreIds,
-        filterDay, timeFrom, timeTo,
+        aiResults,
+        bookstores,
+        searchName,
+        searchAddress,
+        selectedDepartments,
+        loading,
+        onlyFavorites,
+        favoriteStoreIds,
+        filterDay,
+        timeFrom,
+        timeTo
     ]);
 
     const timeFilterActive = filterDay && timeFrom && timeTo;

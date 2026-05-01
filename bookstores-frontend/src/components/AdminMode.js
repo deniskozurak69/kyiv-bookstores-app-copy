@@ -1,15 +1,152 @@
-﻿import React, { useState, useContext } from 'react';
-import { Plus, X, Save, Edit2, Trash2, MapPin, Clock, BarChart2 } from 'lucide-react';
+﻿import React, { useState, useContext, useEffect, useRef } from 'react';
+import { Plus, X, Save, Edit2, Trash2, MapPin, Clock, BarChart2, Map } from 'lucide-react';
 import AdminChartsModal from './AdminChartsModal';
 import BookstoresMap from './BookstoresMap';
 import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
 import { LanguageContext } from '../context/LanguageContext';
 import { translations } from '../translations';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 function formatHours(hoursStr) {
     if (!hoursStr) return hoursStr;
     return hoursStr.split(/[,;]/).map(s => s.trim()).filter(Boolean).join('\n');
+}
+
+// Міні-карта для вибору координат
+function CoordPicker({ latitude, longitude, onChange, isDark, t }) {
+    const mapRef = useRef(null);
+    const mapInstance = useRef(null);
+    const markerRef = useRef(null);
+    const [showMap, setShowMap] = useState(false);
+
+    useEffect(() => {
+        if (!showMap || !mapRef.current) return;
+
+        const lat = parseFloat(latitude) || 50.4501;
+        const lng = parseFloat(longitude) || 30.5234;
+
+        if (!mapInstance.current) {
+            mapInstance.current = L.map(mapRef.current).setView([lat, lng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 19,
+            }).addTo(mapInstance.current);
+
+            // Клік на карті — встановлює маркер і оновлює координати
+            mapInstance.current.on('click', (e) => {
+                const { lat, lng } = e.latlng;
+                if (markerRef.current) {
+                    markerRef.current.setLatLng([lat, lng]);
+                } else {
+                    markerRef.current = L.marker([lat, lng]).addTo(mapInstance.current);
+                }
+                onChange(lat.toFixed(6), lng.toFixed(6));
+            });
+        }
+
+        // Якщо вже є координати — показуємо маркер
+        if (latitude && longitude) {
+            const pos = [parseFloat(latitude), parseFloat(longitude)];
+            if (markerRef.current) {
+                markerRef.current.setLatLng(pos);
+            } else {
+                markerRef.current = L.marker(pos).addTo(mapInstance.current);
+            }
+            mapInstance.current.setView(pos, 15);
+        }
+
+        setTimeout(() => mapInstance.current?.invalidateSize(), 100);
+        setTimeout(() => mapInstance.current?.invalidateSize(), 300);
+
+        return () => {
+            if (mapInstance.current && !showMap) {
+                mapInstance.current.remove();
+                mapInstance.current = null;
+                markerRef.current = null;
+            }
+        };
+    }, [showMap]);
+
+    // Оновлюємо маркер коли змінюються координати ззовні
+    useEffect(() => {
+        if (!mapInstance.current || !latitude || !longitude) return;
+        const pos = [parseFloat(latitude), parseFloat(longitude)];
+        if (markerRef.current) {
+            markerRef.current.setLatLng(pos);
+        } else {
+            markerRef.current = L.marker(pos).addTo(mapInstance.current);
+        }
+    }, [latitude, longitude]);
+
+    return (
+        <div>
+            <div className="flex items-center justify-between mb-2">
+                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {t.coordinates}
+                    {latitude && longitude && (
+                        <span className={`ml-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            ({parseFloat(latitude).toFixed(4)}, {parseFloat(longitude).toFixed(4)})
+                        </span>
+                    )}
+                </span>
+                <button
+                    type="button"
+                    onClick={() => setShowMap(!showMap)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition ${showMap
+                            ? isDark ? 'bg-indigo-700 text-white' : 'bg-indigo-600 text-white'
+                            : isDark ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                >
+                    <Map size={13} />
+                    {showMap ? t.hideMap : t.pickOnMap}
+                </button>
+            </div>
+
+            {showMap && (
+                <div className="mb-2">
+                    <p className={`text-xs mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {t.clickToSetMarker}
+                    </p>
+                    <div
+                        ref={mapRef}
+                        className="w-full h-56 rounded-lg overflow-hidden border"
+                        style={{ borderColor: isDark ? '#4b5563' : '#d1d5db' }}
+                    />
+                </div>
+            )}
+
+            {/* Ручне введення як резервний варіант */}
+            <div className="grid grid-cols-2 gap-2 mt-1">
+                <input
+                    type="number"
+                    step="0.000001"
+                    value={latitude}
+                    placeholder={t.latitude + ' (50.4501)'}
+                    onChange={e => onChange(e.target.value, longitude)}
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                />
+                <input
+                    type="number"
+                    step="0.000001"
+                    value={longitude}
+                    placeholder={t.longitude + ' (30.5234)'}
+                    onChange={e => onChange(latitude, e.target.value)}
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                />
+            </div>
+        </div>
+    );
 }
 
 export default function AdminMode({
@@ -40,7 +177,6 @@ export default function AdminMode({
     const [showMap, setShowMap] = useState(false);
     const [showAdminCharts, setShowAdminCharts] = useState(false);
 
-    // Хелпери для локалізованих полів у списку
     const storeName = (store) => language === 'en' && store.name_eng ? store.name_eng : store.name;
     const storeAddress = (store) => language === 'en' && store.address_eng ? store.address_eng : store.address;
     const deptLabel = (dept) => t.departmentNames?.[dept] || dept;
@@ -63,9 +199,7 @@ export default function AdminMode({
             if (!match) return `${t.invalidHoursFormat}: "${cleaned}". ${t.hoursExample}: 09:00 - 20:00 ${t.orExample} Mo-Fr 09:00-18:00`;
             const [, startH, startM, endH, endM] = match.map(Number);
             if (startH < 0 || startH > 23 || startM < 0 || startM > 59 ||
-                endH < 0 || endH > 23 || endM < 0 || endM > 59) {
-                return t.timeRange;
-            }
+                endH < 0 || endH > 23 || endM < 0 || endM > 59) return t.timeRange;
             if (startH * 60 + startM > endH * 60 + endM) return t.startBeforeEnd;
         }
         return '';
@@ -86,8 +220,7 @@ export default function AdminMode({
     return (
         <div className="space-y-6">
             {!showAddForm && !editingStore && (
-                <button
-                    onClick={() => setShowAddForm(true)}
+                <button onClick={() => setShowAddForm(true)}
                     className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl shadow-md hover:bg-green-700 transition">
                     <Plus size={20} /> {t.addBookstore}
                 </button>
@@ -104,7 +237,7 @@ export default function AdminMode({
                         </button>
                     </div>
 
-                    {/* Назва (укр) */}
+                    {/* Назва укр */}
                     <div>
                         <label className={labelClass}>{t.nameUk} *</label>
                         <input type="text" value={formData.name}
@@ -113,7 +246,7 @@ export default function AdminMode({
                             className={inputClass} />
                     </div>
 
-                    {/* Назва (англ) */}
+                    {/* Назва англ */}
                     <div>
                         <label className={labelClass}>{t.nameEn}</label>
                         <input type="text" value={formData.name_eng || ''}
@@ -122,7 +255,7 @@ export default function AdminMode({
                             className={inputClass} />
                     </div>
 
-                    {/* Адреса (укр) */}
+                    {/* Адреса укр */}
                     <div>
                         <label className={labelClass}>{t.addressUk} *</label>
                         <input type="text" value={formData.address}
@@ -131,7 +264,7 @@ export default function AdminMode({
                             className={inputClass} />
                     </div>
 
-                    {/* Адреса (англ) */}
+                    {/* Адреса англ */}
                     <div>
                         <label className={labelClass}>{t.addressEn}</label>
                         <input type="text" value={formData.address_eng || ''}
@@ -159,23 +292,14 @@ export default function AdminMode({
                         </p>
                     </div>
 
-                    {/* Координати */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className={labelClass}>{t.latitude}</label>
-                            <input type="number" step="0.000001" value={formData.latitude}
-                                placeholder="50.4501"
-                                onChange={e => setFormData({ ...formData, latitude: e.target.value })}
-                                className={inputClass} />
-                        </div>
-                        <div>
-                            <label className={labelClass}>{t.longitude}</label>
-                            <input type="number" step="0.000001" value={formData.longitude}
-                                placeholder="30.5234"
-                                onChange={e => setFormData({ ...formData, longitude: e.target.value })}
-                                className={inputClass} />
-                        </div>
-                    </div>
+                    {/* Координати з картою */}
+                    <CoordPicker
+                        latitude={formData.latitude}
+                        longitude={formData.longitude}
+                        onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
+                        isDark={isDark}
+                        t={t}
+                    />
 
                     {/* Відділи */}
                     <div>

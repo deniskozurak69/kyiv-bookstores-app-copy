@@ -344,6 +344,8 @@ app.get('/api/bookstores', async (req, res) => {
         const { name, address, departments } = req.query;
         const values = [];
         let idx = 1;
+
+        // Додаємо name_eng та address_eng у SELECT, щоб фронтенд їх бачив
         let query = `
             SELECT DISTINCT b.id, b.name, b.name_eng, b.address, b.address_eng, b.hours, b.latitude, b.longitude
             FROM Bookstores b
@@ -352,20 +354,24 @@ app.get('/api/bookstores', async (req, res) => {
             WHERE 1=1
         `;
 
+        // ПРАВИЛЬНИЙ ПОШУК ЗА НАЗВОЮ
         if (name) {
-            const nameTranslit = transliterate(name);
-            query += ` AND (b.name ILIKE $${idx} OR b.name ILIKE $${idx + 1})`;
-            values.push(`%${name}%`, `%${nameTranslit}%`);
-            idx += 2;
+            const searchTerm = `%${name}%`;
+            // Шукаємо в обох колонках (UA та ENG) без транслітерації
+            query += ` AND (b.name ILIKE $${idx} OR b.name_eng ILIKE $${idx})`;
+            values.push(searchTerm);
+            idx += 1;
         }
 
+        // ПРАВИЛЬНИЙ ПОШУК ЗА АДРЕСОЮ
         if (address) {
-            const addressTranslit = transliterate(address);
-            query += ` AND (b.address ILIKE $${idx} OR b.address ILIKE $${idx + 1})`;
-            values.push(`%${address}%`, `%${addressTranslit}%`);
-            idx += 2;
+            const searchAddr = `%${address}%`;
+            query += ` AND (b.address ILIKE $${idx} OR b.address_eng ILIKE $${idx})`;
+            values.push(searchAddr);
+            idx += 1;
         }
 
+        // Логіка фільтрації за департаментами (залишається без змін)
         let deptIds = [];
         if (departments) {
             const deptList = Array.isArray(departments) ? departments : [departments];

@@ -4,7 +4,7 @@ import { ThemeContext } from '../context/ThemeContext';
 import { Geolocation } from '@capacitor/geolocation';
 
 // ─── Константи ────────────────────────────────────────────────────────────────
-const GEMINI_API_KEY = "AIzaSyBeNEuFbfIwySAsOVo4SfLuYL3i75Bcudc";   // ←←← ЗМІНИ ЦЕ
+const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_KEY;   // ←←← ЗМІНИ ЦЕ
 
 const GEMINI_MODEL = "gemini-2.5-flash";   // ←←← ЗМІНИ НА ЦЕ
 
@@ -80,6 +80,7 @@ async function callGemini(prompt) {
         console.error('❌ GEMINI_API_KEY не знайдено!');
         throw new Error('Gemini API ключ не налаштовано');
     }
+    
 
     const requestBody = {
         contents: [
@@ -95,7 +96,7 @@ async function callGemini(prompt) {
             topK: 40
         }
     };
-
+    console.log(GEMINI_API_KEY)
     console.log(`📤 Запит до Gemini (${GEMINI_MODEL}):`, prompt.substring(0, 250) + '...');
 
     try {
@@ -129,44 +130,58 @@ async function callGemini(prompt) {
 // ─── Промпт 1: екстракція даних (посилений) ─────────────────────────────────
 async function extractUserIntent(userMessage) {
     const prompt = `
-Ти — помічник для пошуку книгарень. Проаналізуй повідомлення користувача і витягни дані.
+Твоє завдання: витягти дані у форматі JSON. 
 Повідомлення: "${userMessage}"
 Доступні відділи: ${ALL_DEPARTMENTS.join(', ')}
 
-Поверни **ТІЛЬКИ** валідний JSON, без будь-якого додаткового тексту, без markdown, без пояснень.
-Навіть якщо нічого не зрозуміло — поверни порожні значення.
-
+Поверни ТІЛЬКИ чистий JSON за цим шаблоном:
 {
-  "genres": ["назва відділу 1", "назва відділу 2"],
-  "timeInfo": {
-    "dayOsm": "Mo"|"Tu"|"We"|"Th"|"Fr"|"Sa"|"Su"|null,
-    "timeFrom": "HH:MM"|null,
-    "timeTo": "HH:MM"|null,
-    "anyTime": true|false
-  },
-  "hasGenres": true|false,
-  "hasTime": true|false
+  "genres": ["назва"],
+  "bounds": { "minLat": 50.3, "maxLat": 50.6, "minLng": 30.3, "maxLng": 30.7 },
+  "timeInfo": { "dayOsm": "Sa", "timeFrom": "10:00", "timeTo": "18:00", "anyTime": false },
+  "hasGenres": true,
+  "hasLocation": true
 }
-
-Приклади відповідностей жанрів:
-- фантастика, романи → "Художня література"
-- дитячі книги, казки → "Дитяча література"
-- бізнес → "Бізнес"
-- поезія, вірші → "Поезія"
-- Шевченко, Франко → "Українська класика"
-- англійська, словники → "Іноземні мови"
-`;
-
-    const raw = await callGemini(prompt);
-    const clean = raw.replace(/```json|```/g, '').trim();
+Якщо локація не вказана, використовуй дефолтні координати Києва (50.3-50.6, 30.3-30.7).
+Будь лаконічним. Починай відповідь одразу з JSON`;
 
     try {
-        const parsed = JSON.parse(clean);
-        console.log('✅ Витягнуті дані з Gemini:', parsed);
+        let raw = await callGemini(prompt);
+        console.log("=== AI RAW RESPONSE ===", raw);
+
+        // 1. Очищення від маркдауну (прибираємо ```json і ```)
+        const cleaned = raw.replace(/```json|```/gi, "").trim();
+
+        // 2. Пошук самого об'єкта {}
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            console.error("AI не надіслав JSON. Отримано:", raw);
+            throw new Error("Invalid AI response format");
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        // 3. Перевірка обов'язкових полів
+        if (!parsed.genres || parsed.genres.length === 0) {
+            parsed.genres = ["Художня література"];
+            parsed.hasGenres = true;
+        }
+
+        if (!parsed.bounds) {
+            parsed.bounds = { minLat: 50.3, maxLat: 50.6, minLng: 30.3, maxLng: 30.7 };
+        }
+
         return parsed;
     } catch (e) {
-        console.error('❌ Не вдалося розпарсити JSON від Gemini. Отримано:', clean);
-        throw new Error('Невалідний JSON від Gemini');
+        console.error("🚨 Помилка обробки:", e);
+        // Повертаємо безпечний дефолт, щоб додаток не впав
+        return {
+            genres: ["Художня література"],
+            bounds: { minLat: 50.3, maxLat: 50.6, minLng: 30.3, maxLng: 30.7 },
+            timeInfo: { anyTime: true },
+            hasGenres: true,
+            hasLocation: false
+        };
     }
 }
 
@@ -227,8 +242,9 @@ export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilter
                 await handleSorting(userText);
             }
         } catch (err) {
-            console.error('🚨 AI помилка в handleSend:', err);
-            addMessage('assistant', 'Вибачте, сталася помилка при обробці запиту. Спробуйте ще раз.');
+            console.error('Full Error Object:', err);
+            // Виводимо текст помилки в чат для діагностики
+            addMessage('assistant', `❌ Помилка обробки: ${err.message}. Перевірте консоль (F12) для деталей.`);
         } finally {
             setLoading(false);
         }
@@ -266,52 +282,55 @@ export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilter
 
     // Пошук за відділами
     const searchByDepartments = async (data) => {
-        const { genres, timeInfo } = data;
+        const { genres, timeInfo, bounds } = data;
 
-        let byDepts = bookstores.filter(store =>
-            genres.length === 0 || genres.some(g => store.departments?.includes(g))
-        );
+        // 1. Фільтр за відділами ТА Геолокацією
+        let filtered = bookstores.filter(store => {
+            const hasGenre = genres.length === 0 || genres.some(g => store.departments?.includes(g));
 
-        if (byDepts.length === 0) {
-            const msg = await generateResponse('Не знайдено жодної книгарні з потрібними відділами', { genres });
-            addMessage('assistant', msg);
+            // Перевірка чи входить книгарня в прямокутник координат
+            const lat = parseFloat(store.latitude);
+            const lng = parseFloat(store.longitude);
+            const isInBounds = !bounds || (
+                lat >= bounds.minLat && lat <= bounds.maxLat &&
+                lng >= bounds.minLng && lng <= bounds.maxLng
+            );
+
+            return hasGenre && isInBounds;
+        });
+
+        if (filtered.length === 0) {
+            const msg = await generateResponse('Нічого не знайдено за такими критеріями', { genres, bounds });
+            addMessage('assistant', msg + "\n\nСпробуйте змінити район або обрати інші жанри.");
             setStep('collecting');
-            setCollectedData({ genres: [], timeInfo: null });
             return;
         }
 
-        // Фільтр за часом
-        if (!timeInfo?.anyTime && timeInfo?.dayOsm && timeInfo?.timeFrom && timeInfo?.timeTo) {
-            const from = timeToMinutes(timeInfo.timeFrom);
-            const to = timeToMinutes(timeInfo.timeTo);
-            if (from !== null && to !== null && from < to) {
-                const byTime = byDepts.filter(store =>
-                    storeWorksAt(store.hours, timeInfo.dayOsm, from, to)
-                );
-                if (byTime.length === 0) {
-                    const msg = await generateResponse(
-                        'Є книгарні з потрібними відділами, але жодна не працює в зазначений час',
-                        { genres, timeInfo, storesWithDepts: byDepts.length }
-                    );
-                    addMessage('assistant', msg + '\n\nСпробуйте змінити часові рамки.');
-                    setStep('collecting');
-                    setCollectedData({ genres, timeInfo: null });
-                    return;
-                }
-                byDepts = byTime;
+        // 2. Фільтр за часом
+        if (!timeInfo?.anyTime && timeInfo?.dayOsm) {
+            const from = timeToMinutes(timeInfo.timeFrom || "00:00");
+            const to = timeToMinutes(timeInfo.timeTo || "23:59");
+
+            const byTime = filtered.filter(store =>
+                storeWorksAt(store.hours, timeInfo.dayOsm, from, to)
+            );
+
+            if (byTime.length === 0) {
+                addMessage('assistant', "Книгарні у цьому районі є, але вони зачинені у вибраний час. Показати їх все одно?");
+                // Можна додати логіку пропозиції змінити час
+                filtered = filtered; // Залишаємо як є для наглядності
+            } else {
+                filtered = byTime;
             }
         }
 
-        setMatchedStores(byDepts);
+        // 3. Успішний результат
+        setMatchedStores(filtered);
         setStep('sorting');
 
-        const msg = await generateResponse(
-            'Знайдено книгарні, запитуємо як сортувати',
-            { count: byDepts.length, genres }
-        );
-
+        const msg = await generateResponse('Знайдено результати', { count: filtered.length });
         addMessage('assistant',
-            `${msg}\n\nЗнайдено **${byDepts.length}** книгарень.\n\nЯк їх відсортувати?\n• **За відстанню** (потрібна геолокація)\n• **За рейтингом**`,
+            `${msg}\n\nЯ знайшов **${filtered.length}** книгарень у вибраній локації.\n\nЯк їх відсортувати?`,
             { showSortButtons: true }
         );
     };
