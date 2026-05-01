@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     BookOpen, Search, MapPin, Star, MessageCircle, BarChart2,
     Bot, Moon, ChevronRight, ChevronDown, ChevronUp, X, ArrowLeft,
@@ -15,7 +15,7 @@ const sections = [
         bg: "#eef2ff",
         title: "Початок роботи",
         subtitle: "Реєстрація та вхід",
-        images: ["start1", "start2"], // Додано фото
+        images: ["start1", "start2"],
         content: [
             {
                 heading: "Реєстрація",
@@ -34,7 +34,7 @@ const sections = [
         bg: "#e0f2fe",
         title: "Пошук книгарень",
         subtitle: "Фільтри та результати",
-        images: ["search1", "search2"], // Додано фото
+        images: ["search1", "search2"],
         content: [
             {
                 heading: "Пошук за назвою та адресою",
@@ -61,7 +61,7 @@ const sections = [
         bg: "#d1fae5",
         title: "Картка книгарні",
         subtitle: "Деталі, карта, відгуки",
-        images: ["details1", "details2", "details3", "details4"], // Додано фото
+        images: ["details1", "details2", "details3", "details4"],
         content: [
             {
                 heading: "Інформація",
@@ -88,7 +88,7 @@ const sections = [
         bg: "#fef3c7",
         title: "Рейтинг та оцінки",
         subtitle: "Як оцінити книгарню",
-        images: ["rating"], // Додано фото
+        images: ["rating"],
         content: [
             {
                 heading: "Загальний рейтинг",
@@ -107,7 +107,7 @@ const sections = [
         bg: "#ede9fe",
         title: "Діаграми",
         subtitle: "Статистика книгарень",
-        images: ["charts1", "charts2", "charts3"], // Додано фото
+        images: ["charts1", "charts2", "charts3"],
         content: [
             {
                 heading: "Як відкрити",
@@ -130,7 +130,7 @@ const sections = [
         bg: "#fce7f3",
         title: "AI-асистент",
         subtitle: "Розумний підбір на базі Gemini",
-        images: ["ai1", "ai2"], // Додано фото
+        images: ["ai1", "ai2"],
         content: [
             {
                 heading: "Як запустити",
@@ -184,7 +184,7 @@ const eulaContent = [
             "Декомпілювати, здійснювати зворотну розробку або дизасемблювати Застосунок;",
             "Використовувати Застосунок для будь-яких незаконних цілей або порушення прав третіх осіб;",
             "Публікувати неправдиві, образливі або незаконні відгуки та коментарі;",
-            "Використовувати автоматизовані засоби (боти, скрипти) для взаємодії з Застоसंकом."
+            "Використовувати автоматизовані засоби (боти, скрипти) для взаємодії з Застосунком."
         ]
     },
     {
@@ -517,10 +517,9 @@ function SectionPage({ section, onBack }) {
                 ))}
             </div>
 
-            {/* ГАЛЕРЕЯ СКРІНШОТІВ (НОВИЙ БЛОК) */}
+            {/* ГАЛЕРЕЯ СКРІНШОТІВ — без заголовка */}
             {section.images && section.images.length > 0 && (
                 <div className="px-4 mt-8">
-                    <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-1">Скріншоти інструкції</h2>
                     <div className={`grid gap-4 ${section.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
                         {section.images.map((imgName, idx) => (
                             <div key={idx} className="bg-gray-200 rounded-2xl overflow-hidden shadow-sm border-2 border-white aspect-[9/16]">
@@ -574,10 +573,49 @@ function FAQPage({ onBack }) {
     );
 }
 
+// ─── NAV TABS ────────────────────────────────────────────────────────────────
+
+const NAV_ITEMS = [
+    { id: "gallery", label: "Галерея" },
+    { id: "video", label: "Відео-огляд" },
+    { id: "instructions", label: "Інструкції" },
+    { id: "support", label: "Підтримка та право" },
+];
+
 // ─── MAIN GUIDE PAGE ─────────────────────────────────────────────────────────
 
 export default function GuidePage({ onBack }) {
     const [activePage, setActivePage] = useState(null);
+    const [activeTab, setActiveTab] = useState("gallery");
+
+    // Refs for each anchor section
+    const sectionRefs = {
+        gallery: useRef(null),
+        video: useRef(null),
+        instructions: useRef(null),
+        support: useRef(null),
+    };
+
+    // Scroll to section on tab click
+    const handleTabClick = (id) => {
+        setActiveTab(id);
+        sectionRefs[id]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    // Update active tab on scroll via IntersectionObserver
+    useEffect(() => {
+        const observers = [];
+        Object.entries(sectionRefs).forEach(([id, ref]) => {
+            if (!ref.current) return;
+            const obs = new IntersectionObserver(
+                ([entry]) => { if (entry.isIntersecting) setActiveTab(id); },
+                { threshold: 0.35 }
+            );
+            obs.observe(ref.current);
+            observers.push(obs);
+        });
+        return () => observers.forEach((o) => o.disconnect());
+    }, [activePage]); // re-run only when returning to main page
 
     const activeSection = sections.find((s) => s.id === activePage);
 
@@ -589,20 +627,43 @@ export default function GuidePage({ onBack }) {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-10">
-            {/* TOP BAR */}
-            <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-2">
-                    <span className="text-xl">📚</span>
-                    <span className="font-semibold text-gray-900 text-sm">Посібник користувача</span>
+
+            {/* ── TOP BAR ── */}
+            <div className="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
+                {/* Title row */}
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xl">📚</span>
+                        <span className="font-semibold text-gray-900 text-sm">Посібник користувача</span>
+                    </div>
+                    {onBack && (
+                        <button onClick={onBack} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                            <X size={18} className="text-gray-500" />
+                        </button>
+                    )}
                 </div>
-                {onBack && (
-                    <button onClick={onBack} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
-                        <X size={18} className="text-gray-500" />
-                    </button>
-                )}
+
+                {/* Navigation tabs */}
+                <div
+                    className="flex gap-1 overflow-x-auto px-3 pb-2"
+                    style={{ scrollbarWidth: "none" }}
+                >
+                    {NAV_ITEMS.map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={() => handleTabClick(item.id)}
+                            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${activeTab === item.id
+                                    ? "bg-indigo-100 text-indigo-700"
+                                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                }`}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* HERO */}
+            {/* ── HERO ── */}
             <div className="mx-4 mt-5 rounded-3xl bg-gradient-to-br from-indigo-500 to-indigo-700 p-6 text-white shadow-lg overflow-hidden relative">
                 <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/10 rounded-full" />
                 <div className="absolute -bottom-8 -left-4 w-20 h-20 bg-white/10 rounded-full" />
@@ -618,7 +679,44 @@ export default function GuidePage({ onBack }) {
                 </div>
             </div>
 
-            {/* QUICK STATS */}
+            {/* ── SECTION: GALLERY ── */}
+            <div ref={sectionRefs.gallery} id="gallery">
+                <h2 className="px-5 mt-6 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Галерея застосунку</h2>
+                <div className="flex overflow-x-auto gap-4 px-4 pb-4 snap-x" style={{ scrollbarWidth: "none" }}>
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="flex-shrink-0 w-48 aspect-[9/16] bg-gray-200 rounded-2xl shadow-sm snap-center border-2 border-white overflow-hidden">
+                            <img
+                                src={`/images/photo${i}.jpg`}
+                                alt={`Screen ${i}`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.src = "https://via.placeholder.com/400x700?text=Image+Missing"; }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── SECTION: VIDEO ── */}
+            <div ref={sectionRefs.video} id="video">
+                <div className="mx-4 mt-4 bg-white rounded-3xl p-5 shadow-sm border border-indigo-50">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Play size={16} className="text-indigo-500" />
+                        <h2 className="font-semibold text-gray-800 text-sm">Відео-огляд</h2>
+                    </div>
+                    <div className="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden shadow-inner">
+                        <video
+                            controls
+                            className="w-full h-full object-cover"
+                            poster="/images/photo1.jpg"
+                        >
+                            <source src="/images/video.mp4" type="video/mp4" />
+                            Ваш браузер не підтримує відео.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── QUICK STATS ── */}
             <div className="mx-4 mt-6 grid grid-cols-3 gap-3">
                 {[
                     { icon: <MapPin size={16} />, label: "100+", sub: "книгарень" },
@@ -633,12 +731,52 @@ export default function GuidePage({ onBack }) {
                 ))}
             </div>
 
-            {/* SECTIONS LIST */}
+            {/* ── ПРО ЗАСТОСУНОК ── */}
             <div className="px-4 mt-8">
+                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">Про застосунок</h2>
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-3 p-4 border-b border-gray-50">
+                        <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-indigo-50 text-indigo-600 flex-shrink-0">
+                            <Info size={20} />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-gray-900 text-sm">Книгарні Києва</p>
+                            <p className="text-xs text-gray-500">Інформація про застосунок</p>
+                        </div>
+                    </div>
+
+                    {[
+                        { label: "Версія", value: "1.0.2", badge: { text: "Актуальна", color: "bg-indigo-50 text-indigo-600" } },
+                        { label: "Платформи", value: "Android · iOS" },
+                        { label: "Місто", value: "Київ, Україна 🇺🇦" },
+                        { label: "AI-модель", value: "Google Gemini", badge: { text: "Активна", color: "bg-green-50 text-green-600" } },
+                        { label: "Підтримка", value: "support@kyiv-bookstores-app.com", valueColor: "text-indigo-500" },
+                    ].map((row, i, arr) => (
+                        <div key={i} className={`flex items-center justify-between px-4 py-3 ${i < arr.length - 1 ? "border-b border-gray-50" : ""}`}>
+                            <p className="text-xs text-gray-400">{row.label}</p>
+                            <div className="flex items-center gap-2">
+                                <p className={`text-xs font-semibold ${row.valueColor || "text-gray-800"}`}>{row.value}</p>
+                                {row.badge && (
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${row.badge.color}`}>
+                                        {row.badge.text}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ── SECTION: INSTRUCTIONS ── */}
+            <div ref={sectionRefs.instructions} id="instructions" className="px-4 mt-8">
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">Інструкції</h2>
                 <div className="space-y-3">
                     {sections.map((section) => (
-                        <button key={section.id} onClick={() => setActivePage(section.id)} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                        <button
+                            key={section.id}
+                            onClick={() => setActivePage(section.id)}
+                            className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform"
+                        >
                             <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: section.bg, color: section.color }}>
                                 {section.icon}
                             </div>
@@ -652,8 +790,8 @@ export default function GuidePage({ onBack }) {
                 </div>
             </div>
 
-            {/* SUPPORT & LEGAL */}
-            <div className="px-4 mt-8 space-y-3">
+            {/* ── SECTION: SUPPORT & LEGAL ── */}
+            <div ref={sectionRefs.support} id="support" className="px-4 mt-8 space-y-3">
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">Підтримка та право</h2>
 
                 {/* FAQ */}
@@ -697,7 +835,7 @@ export default function GuidePage({ onBack }) {
                 </button>
             </div>
 
-            {/* FOOTER */}
+            {/* ── FOOTER ── */}
             <p className="text-center text-[10px] text-gray-400 mt-12 px-4 uppercase tracking-[2px]">
                 Книгарні Києва · v.1.0.2 · 2026
             </p>
