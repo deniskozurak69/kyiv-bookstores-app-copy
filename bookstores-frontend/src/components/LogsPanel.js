@@ -1,5 +1,5 @@
 ﻿import React, { useState, useMemo, useContext } from 'react';
-import { X, LogOut, RefreshCw, Download, Trash2, ArrowUpDown, Filter } from 'lucide-react';
+import { X, LogOut, RefreshCw, Download, Trash2, ArrowUpDown, Filter, Sun, Moon } from 'lucide-react'; // Додано Sun, Moon
 import { API_URL } from '../utils/api';
 import { ThemeContext } from '../context/ThemeContext';
 import { LanguageContext } from '../context/LanguageContext';
@@ -40,8 +40,8 @@ export default function LogsPanel({
     setShowLogs,
     handleLogout
 }) {
-    const { theme } = useContext(ThemeContext);
-    const { language } = useContext(LanguageContext);
+    const { theme, toggleTheme } = useContext(ThemeContext); // Додано toggleTheme
+    const { language, toggleLanguage } = useContext(LanguageContext); // Додано toggleLanguage
     const t = translations[language];
     const isDark = theme === 'dark';
 
@@ -51,37 +51,22 @@ export default function LogsPanel({
 
     // Спеціальні терміни для логів
     const extraTerms = {
-        uk: {
-            enabled: 'увімкнено',
-            disabled: 'вимкнено',
-            dept: 'відділ',
-            userNotFound: 'користувача не знайдено'
-        },
-        en: {
-            enabled: 'enabled',
-            disabled: 'disabled',
-            dept: 'department',
-            userNotFound: 'user not found'
-        }
+        uk: { enabled: 'увімкнено', disabled: 'вимкнено', dept: 'відділ', userNotFound: 'користувача не знайдено' },
+        en: { enabled: 'enabled', disabled: 'disabled', dept: 'department', userNotFound: 'user not found' }
     };
 
-    // Функція перекладу
     const translateEvent = (eventText, targetLang = language) => {
         if (!eventText) return '';
         let translated = eventText;
         const currentT = translations[targetLang];
         const currentExtra = extraTerms[targetLang];
 
-        // 1. Порядок слів для фільтрів: "відділ [Назва] увімкнено" -> "[Назва] department filter change: enabled"
         if (eventText.includes('ЗМІНА ФІЛЬТРА: відділ')) {
             let deptName = "";
             let status = "";
-
-            // Витягуємо назву відділу та статус
             Object.keys(translations.uk.departmentNames).forEach(uaKey => {
                 if (eventText.includes(uaKey)) deptName = uaKey;
             });
-
             if (eventText.includes('увімкнено')) status = 'enabled';
             if (eventText.includes('вимкнено')) status = 'disabled';
 
@@ -92,7 +77,6 @@ export default function LogsPanel({
             }
         }
 
-        // 2. Стандартна мапа системних фраз
         const systemMap = {
             'ВХІД УСПІШНИЙ': currentT.logLoginSuccess,
             'НЕВДАЛИЙ ВХІД': currentT.logLoginFail,
@@ -114,7 +98,6 @@ export default function LogsPanel({
             translated = translated.replace(new RegExp(ua, 'gi'), replacement);
         });
 
-        // 3. Заміна назв відділів
         Object.keys(translations.uk.departmentNames).forEach(uaDept => {
             const replacementDept = currentT.departmentNames[uaDept];
             translated = translated.replace(new RegExp(uaDept, 'g'), replacementDept);
@@ -124,53 +107,32 @@ export default function LogsPanel({
     };
 
     const downloadLogs = () => {
-        // 1. Перевірка наявності даних
         if (!logs || logs.length === 0) {
             alert(t.noLogsToDownload);
             return;
         }
-
         try {
-            // 2. Формування масиву об'єктів для файлу
             const fileLogs = parsedLogs.map(log => {
-                // Визначаємо мову для перекладу (відповідає поточній мові інтерфейсу)
                 const targetLang = language === 'uk' ? 'uk' : 'en';
-
                 return {
                     time: log.time,
                     user: log.user,
-                    // Викликаємо функцію перекладу, яку ми налаштували раніше
                     event: translateEvent(log.event, targetLang)
                 };
             });
-
-            // 3. Створення Blob об'єкта (форматований JSON)
             const jsonString = JSON.stringify(fileLogs, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
-
-            // 4. Генерація посилання та автоматичне скачування
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-
-            // Назва файлу залежить від мови та поточної дати
             const dateStr = new Date().toISOString().slice(0, 10);
             link.href = url;
             link.download = `bookstore_logs_${language}_${dateStr}.json`;
-
-            // Додаємо в DOM, клікаємо і видаляємо
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
-            // Звільняємо пам'ять
             URL.revokeObjectURL(url);
-
-            // Сповіщення про успіх (опціонально)
-            if (t.fileSaved) console.log(t.fileSaved);
-
         } catch (err) {
             console.error("Download error:", err);
-            alert(t.fileSaveError || "Error saving file");
         }
     };
 
@@ -216,13 +178,27 @@ export default function LogsPanel({
         <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-blue-50 text-gray-900'}`}>
             <div className={`p-4 shadow-lg ${isDark ? 'bg-indigo-900' : 'bg-indigo-600 text-white'}`}>
                 <div className="flex justify-between items-start mb-3">
-                    <div>
-                        <h1 className="text-2xl font-bold mb-1">📋 {t.logsTitle}</h1>
-                        <p className="text-xs opacity-90">👤 {currentUser.username} {t.adminBadge}</p>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-2xl font-bold mb-1 truncate">📋 {t.logsTitle}</h1>
+                        <p className="text-xs opacity-90 truncate">👤 {currentUser.username} {t.adminBadge}</p>
                     </div>
-                    <div className="flex gap-2">
-                        <button onClick={() => setShowLogs(false)} className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-white/20 hover:bg-white/30 text-white'}`}>
-                            <X size={15} /> {t.close}
+
+                    {/* НОВИЙ БЛОК: Кнопки мови та теми */}
+                    <div className="flex items-center gap-1.5 ml-2">
+                        <button
+                            onClick={toggleLanguage}
+                            className="px-2 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition text-[10px] font-bold"
+                        >
+                            {language === 'uk' ? 'EN' : 'УКР'}
+                        </button>
+                        <button
+                            onClick={toggleTheme}
+                            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition"
+                        >
+                            {isDark ? <Sun size={15} className="text-yellow-300" /> : <Moon size={15} />}
+                        </button>
+                        <button onClick={() => setShowLogs(false)} className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition">
+                            <X size={15} />
                         </button>
                     </div>
                 </div>
@@ -234,11 +210,11 @@ export default function LogsPanel({
                 </div>
 
                 <div className="flex gap-1.5 mt-2">
-                    <select value={filterUser} onChange={e => setFilterUser(e.target.value)} className="flex-1 bg-white/10 text-xs p-1.5 rounded border border-white/20">
+                    <select value={filterUser} onChange={e => setFilterUser(e.target.value)} className={`flex-1 text-xs p-1.5 rounded border border-white/20 ${isDark ? 'bg-gray-800' : 'bg-indigo-500'}`}>
                         <option value="">{t.logAllUsers}</option>
                         {uniqueUsers.map(u => <option key={u} value={u}>{u}</option>)}
                     </select>
-                    <select value={filterEventType} onChange={e => setFilterEventType(e.target.value)} className="flex-1 bg-white/10 text-xs p-1.5 rounded border border-white/20">
+                    <select value={filterEventType} onChange={e => setFilterEventType(e.target.value)} className={`flex-1 text-xs p-1.5 rounded border border-white/20 ${isDark ? 'bg-gray-800' : 'bg-indigo-500'}`}>
                         {EVENT_TYPES.map(et => <option key={et.value} value={et.value}>{et.label}</option>)}
                     </select>
                 </div>
