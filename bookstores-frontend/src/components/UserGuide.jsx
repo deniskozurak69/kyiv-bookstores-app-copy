@@ -519,15 +519,15 @@ function SectionPage({ section, onBack }) {
 
             {/* ГАЛЕРЕЯ СКРІНШОТІВ — без заголовка */}
             {section.images && section.images.length > 0 && (
-                <div className="px-4 mt-8">
-                    <div className={`grid gap-4 ${section.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                <div className="mt-8">
+                    <div className="flex overflow-x-auto gap-3 px-4 pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: "none" }}>
                         {section.images.map((imgName, idx) => (
-                            <div key={idx} className="bg-gray-200 rounded-2xl overflow-hidden shadow-sm border-2 border-white aspect-[9/16]">
+                            <div key={idx} className="flex-shrink-0 snap-center rounded-2xl overflow-hidden shadow-sm border-2 border-white bg-gray-200" style={{ height: 420 }}>
                                 <img
                                     src={`/images/${imgName}.jpg`}
                                     alt={`Step ${idx + 1}`}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400x700?text=Image+Not+Found'; }}
+                                    className="h-full w-auto block"
+                                    onError={(e) => { e.target.src = "https://via.placeholder.com/200x420?text=Not+Found"; }}
                                 />
                             </div>
                         ))}
@@ -707,7 +707,7 @@ export default function GuidePage({ onBack }) {
                         <video
                             controls
                             className="w-full h-full object-cover"
-                            poster="/images/photo1.jpg"
+                            poster="/images/thumbnail.jpg"
                         >
                             <source src="/images/video.mp4" type="video/mp4" />
                             Ваш браузер не підтримує відео.

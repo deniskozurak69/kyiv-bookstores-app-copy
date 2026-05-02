@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
 import { X, Send, Loader2, Bot, User, MapPin, Star } from 'lucide-react';
 import { ThemeContext } from '../context/ThemeContext';
+import { LanguageContext } from '../context/LanguageContext';
+import { translations } from '../translations';
 import { Geolocation } from '@capacitor/geolocation';
 
-// ─── Константи ────────────────────────────────────────────────────────────────
-const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_KEY;   // ←←← ЗМІНИ ЦЕ
-
-const GEMINI_MODEL = "gemini-2.5-flash";   // ←←← ЗМІНИ НА ЦЕ
-
+// ─── Константи (Глобальні) ────────────────────────────────────────────────────
+const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_KEY;
+const GEMINI_MODEL = "gemini-2.0-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
 const ALL_DEPARTMENTS = [
@@ -18,7 +18,7 @@ const ALL_DEPARTMENTS = [
 
 const DAY_ORDER = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-// ─── Допоміжні функції ────────────────────────────────────────────────────────
+// ─── Допоміжні функції (Поза компонентом) ──────────────────────────────────────
 function timeToMinutes(str) {
     if (!str) return null;
     const match = String(str).trim().match(/(\d{1,2}):(\d{2})/);
@@ -74,150 +74,96 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// ─── ВИПРАВЛЕНИЙ Gemini з детальним логуванням ────────────────────────────────
 async function callGemini(prompt) {
-    if (!GEMINI_API_KEY) {
-        console.error('❌ GEMINI_API_KEY не знайдено!');
-        throw new Error('Gemini API ключ не налаштовано');
-    }
-    
-
+    if (!GEMINI_API_KEY) throw new Error('Gemini API key not configured');
     const requestBody = {
-        contents: [
-            {
-                role: "user",
-                parts: [{ text: prompt }]
-            }
-        ],
-        generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 1024,
-            topP: 0.95,
-            topK: 40
-        }
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 1024 }
     };
-    console.log(GEMINI_API_KEY)
-    console.log(`📤 Запит до Gemini (${GEMINI_MODEL}):`, prompt.substring(0, 250) + '...');
-
     try {
         const res = await fetch(GEMINI_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody),
         });
-
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('❌ Gemini API помилка:', {
-                status: res.status,
-                model: GEMINI_MODEL,
-                response: errorText
-            });
-            throw new Error(`Gemini API помилка: ${res.status} - ${errorText.substring(0, 400)}`);
-        }
-
+        if (!res.ok) throw new Error(`API Error: ${res.status}`);
         const data = await res.json();
-        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-        console.log('✅ Gemini відповів успішно');
-        return responseText;
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     } catch (err) {
-        console.error('🚨 Помилка при виклику callGemini:', err);
+        console.error('🚨 Gemini Error:', err);
         throw err;
     }
-}
-
-// ─── Промпт 1: екстракція даних (посилений) ─────────────────────────────────
-async function extractUserIntent(userMessage) {
-    const prompt = `
-Твоє завдання: витягти дані у форматі JSON. 
-Повідомлення: "${userMessage}"
-Доступні відділи: ${ALL_DEPARTMENTS.join(', ')}
-
-Поверни ТІЛЬКИ чистий JSON за цим шаблоном:
-{
-  "genres": ["назва"],
-  "bounds": { "minLat": 50.3, "maxLat": 50.6, "minLng": 30.3, "maxLng": 30.7 },
-  "timeInfo": { "dayOsm": "Sa", "timeFrom": "10:00", "timeTo": "18:00", "anyTime": false },
-  "hasGenres": true,
-  "hasLocation": true
-}
-Якщо локація не вказана, використовуй дефолтні координати Києва (50.3-50.6, 30.3-30.7).
-Будь лаконічним. Починай відповідь одразу з JSON`;
-
-    try {
-        let raw = await callGemini(prompt);
-        console.log("=== AI RAW RESPONSE ===", raw);
-
-        // 1. Очищення від маркдауну (прибираємо ```json і ```)
-        const cleaned = raw.replace(/```json|```/gi, "").trim();
-
-        // 2. Пошук самого об'єкта {}
-        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            console.error("AI не надіслав JSON. Отримано:", raw);
-            throw new Error("Invalid AI response format");
-        }
-
-        const parsed = JSON.parse(jsonMatch[0]);
-
-        // 3. Перевірка обов'язкових полів
-        if (!parsed.genres || parsed.genres.length === 0) {
-            parsed.genres = ["Художня література"];
-            parsed.hasGenres = true;
-        }
-
-        if (!parsed.bounds) {
-            parsed.bounds = { minLat: 50.3, maxLat: 50.6, minLng: 30.3, maxLng: 30.7 };
-        }
-
-        return parsed;
-    } catch (e) {
-        console.error("🚨 Помилка обробки:", e);
-        // Повертаємо безпечний дефолт, щоб додаток не впав
-        return {
-            genres: ["Художня література"],
-            bounds: { minLat: 50.3, maxLat: 50.6, minLng: 30.3, maxLng: 30.7 },
-            timeInfo: { anyTime: true },
-            hasGenres: true,
-            hasLocation: false
-        };
-    }
-}
-
-// ─── Промпт 2: формування відповіді ─────────────────────────────────────────
-async function generateResponse(situation, details) {
-    const prompt = `
-Ти — дружній AI-асистент додатку "Книгарні Києва". Відповідай українською, коротко і по суті.
-Ситуація: ${situation}
-Деталі: ${JSON.stringify(details, null, 2)}
-Згенеруй коротке повідомлення для користувача (1-3 речення).
-`;
-    return await callGemini(prompt);
 }
 
 // ─── Головний компонент ───────────────────────────────────────────────────────
 export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilters }) {
     const { theme } = useContext(ThemeContext);
+    const { language } = useContext(LanguageContext);
+    const t = translations[language];
+    const isDark = theme === 'dark';
+
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState('initial');
     const [collectedData, setCollectedData] = useState({ genres: [], timeInfo: null });
     const [matchedStores, setMatchedStores] = useState([]);
-    const [userPosition, setUserPosition] = useState(null);
     const messagesEndRef = useRef(null);
 
-    // Привітання
+    // Словник перекладів для AI (використовуємо useMemo, щоб не перераховувати постійно)
+    const aiT = useMemo(() => ({
+        uk: {
+            welcome: `Привіт! 👋 Я допоможу знайти підходящу книгарню.\n\nНапишіть мені:\n• Які книги або жанри вас цікавлять?\n• В який час плануєте відвідати (напр. "субота 12:00" або "час неважливий")?`,
+            notUnderstood: "Не зовсім зрозумів 🤔",
+            askGenres: "• Які книги або жанри вас цікавлять?",
+            askTime: "• В який час плануєте відвідати?",
+            noResults: "Нічого не знайдено за такими критеріями. Спробуйте обрати інші жанри.",
+            foundCount: (n) => `Я знайшов **${n}** книгарень. Як їх відсортувати?`,
+            sortingPrompt: "Оберіть: **за відстанню** чи **за рейтингом**?",
+            gettingLoc: "Отримую вашу локацію... 📍",
+            locDenied: "Геолокацію не надано. Відсортую за рейтингом.",
+            filtersApplied: "Фільтри застосовано! Дивіться результати нижче 👇",
+            newSearch: "Новий пошук",
+            placeholder: "Напишіть повідомлення...",
+            sortByDist: "За відстанню",
+            sortByRate: "За рейтингом",
+            topResults: "Топ результати:",
+            km: "км",
+            startAgain: "🔄 Почати спочатку",
+            error: "❌ Помилка:"
+        },
+        en: {
+            welcome: `Hello! 👋 I'll help you find a suitable bookstore.\n\nTell me:\n• What books or genres are you interested in?\n• What time do you plan to visit (e.g. "Saturday 12:00" or "time doesn't matter")?`,
+            notUnderstood: "I didn't quite get that 🤔",
+            askGenres: "• What books or genres are you interested in?",
+            askTime: "• What time do you plan to visit?",
+            noResults: "Nothing found for these criteria. Try choosing different genres.",
+            foundCount: (n) => `I found **${n}** bookstores. How should I sort them?`,
+            sortingPrompt: "Choose: **by distance** or **by rating**?",
+            gettingLoc: "Getting your location... 📍",
+            locDenied: "Location denied. Sorting by rating instead.",
+            filtersApplied: "Filters applied! See results below 👇",
+            newSearch: "New search",
+            placeholder: "Type a message...",
+            sortByDist: "By distance",
+            sortByRate: "By rating",
+            topResults: "Top results:",
+            km: "km",
+            startAgain: "🔄 Start over",
+            error: "❌ Error:"
+        }
+    }), [])[language];
+
     useEffect(() => {
         if (isOpen && messages.length === 0) {
-            setMessages([{
-                role: 'assistant',
-                text: `Привіт! 👋 Я допоможу знайти підходящу книгарню.\n\nНапишіть мені:\n• Які книги або жанри вас цікавлять?\n• В який час плануєте відвідати (або "час неважливий")?`,
-            }]);
+            setMessages([{ role: 'assistant', text: aiT.welcome }]);
             setStep('collecting');
         }
-    }, [isOpen]);
+        // Оновлюємо привітання, якщо мова змінилася на самому старті
+        if (isOpen && messages.length === 1 && messages[0].role === 'assistant') {
+            setMessages([{ role: 'assistant', text: aiT.welcome }]);
+        }
+    }, [isOpen, language, aiT.welcome]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -227,7 +173,34 @@ export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilter
         setMessages(prev => [...prev, { role, text, ...extra }]);
     };
 
-    // ─── Обробка повідомлення ─────────────────────────────────
+    const extractUserIntent = async (userMessage) => {
+        const prompt = `
+        Task: Extract user preferences into JSON.
+        Message: "${userMessage}"
+        Available Departments: ${ALL_DEPARTMENTS.join(', ')}
+        
+        Return ONLY valid JSON:
+        {
+          "genres": ["exact names from Available Departments"],
+          "timeInfo": { "dayOsm": "Mo/Tu/We/Th/Fr/Sa/Su", "timeFrom": "HH:mm", "timeTo": "HH:mm", "anyTime": boolean },
+          "hasGenres": boolean,
+          "hasTime": boolean
+        }`;
+
+        const raw = await callGemini(prompt);
+        const jsonMatch = raw.replace(/```json|```/gi, "").trim().match(/\{[\s\S]*\}/);
+        return jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+    };
+
+    const generateAIResponse = async (situation, details) => {
+        const prompt = `
+        You are a friendly assistant for Kyiv Bookstores app. 
+        Language: ${language === 'uk' ? 'Ukrainian' : 'English'}.
+        Situation: ${situation}. Details: ${JSON.stringify(details)}.
+        Provide a 1-sentence friendly response.`;
+        return await callGemini(prompt);
+    };
+
     const handleSend = async () => {
         if (!input.trim() || loading) return;
         const userText = input.trim();
@@ -237,186 +210,103 @@ export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilter
 
         try {
             if (step === 'collecting') {
-                await handleCollecting(userText);
+                const extracted = await extractUserIntent(userText);
+                if (!extracted) throw new Error("AI parsing error");
+
+                const newData = {
+                    genres: extracted.hasGenres ? extracted.genres : collectedData.genres,
+                    timeInfo: (extracted.hasTime || extracted.timeInfo) ? extracted.timeInfo : collectedData.timeInfo,
+                };
+                setCollectedData(newData);
+
+                // Перевірка чи достатньо даних
+                const hasGenres = newData.genres.length > 0;
+                const hasTime = !!newData.timeInfo;
+
+                if (!hasGenres || !hasTime) {
+                    let ask = `${aiT.notUnderstood}\n`;
+                    if (!hasGenres) ask += `${aiT.askGenres}\n`;
+                    if (!hasTime) ask += `${aiT.askTime}`;
+                    addMessage('assistant', ask);
+                    return;
+                }
+
+                // Фільтрація
+                let filtered = bookstores.filter(s =>
+                    newData.genres.some(g => s.departments?.includes(g))
+                );
+
+                if (newData.timeInfo && !newData.timeInfo.anyTime) {
+                    const from = timeToMinutes(newData.timeInfo.timeFrom || "00:00");
+                    const to = timeToMinutes(newData.timeInfo.timeTo || "23:59");
+                    filtered = filtered.filter(s => storeWorksAt(s.hours, newData.timeInfo.dayOsm, from, to));
+                }
+
+                if (filtered.length === 0) {
+                    addMessage('assistant', aiT.noResults);
+                } else {
+                    setMatchedStores(filtered);
+                    setStep('sorting');
+                    const aiMsg = await generateAIResponse('found stores', { count: filtered.length });
+                    addMessage('assistant', `${aiMsg}\n\n${aiT.foundCount(filtered.length)}`, { showSortButtons: true });
+                }
             } else if (step === 'sorting') {
-                await handleSorting(userText);
+                const lower = userText.toLowerCase();
+                if (lower.includes('dist') || lower.includes('відстан') || lower.includes('близьк')) await handleSortByDistance();
+                else if (lower.includes('rat') || lower.includes('рейтинг') || lower.includes('оцінк')) handleSortByRating();
+                else addMessage('assistant', aiT.sortingPrompt, { showSortButtons: true });
             }
         } catch (err) {
-            console.error('Full Error Object:', err);
-            // Виводимо текст помилки в чат для діагностики
-            addMessage('assistant', `❌ Помилка обробки: ${err.message}. Перевірте консоль (F12) для деталей.`);
+            addMessage('assistant', `${aiT.error} ${err.message}`);
         } finally {
             setLoading(false);
         }
     };
 
-    // Крок 1: Збір даних
-    const handleCollecting = async (userText) => {
+    const handleSortByDistance = async () => {
+        addMessage('assistant', aiT.gettingLoc);
         try {
-            const extracted = await extractUserIntent(userText);
-
-            const newData = {
-                genres: extracted.hasGenres ? extracted.genres : collectedData.genres,
-                timeInfo: extracted.hasTime ? extracted.timeInfo : collectedData.timeInfo,
-            };
-
-            setCollectedData(newData);
-
-            const missingGenres = !extracted.hasGenres && newData.genres.length === 0;
-            const missingTime = !extracted.hasTime && !newData.timeInfo;
-
-            if (missingGenres || missingTime) {
-                let ask = 'Не зовсім зрозумів 🤔\n';
-                if (missingGenres) ask += '• Які книги або жанри вас цікавлять?\n';
-                if (missingTime) ask += '• В який час плануєте відвідати? (або "час неважливий")';
-                addMessage('assistant', ask);
-                return;
-            }
-
-            await searchByDepartments(newData);
-        } catch (err) {
-            console.error('❌ Помилка в handleCollecting:', err);
-            addMessage('assistant', 'Вибачте, не вдалося обробити ваш запит. Спробуйте перефразувати.');
-        }
-    };
-
-    // Пошук за відділами
-    const searchByDepartments = async (data) => {
-        const { genres, timeInfo, bounds } = data;
-
-        // 1. Фільтр за відділами ТА Геолокацією
-        let filtered = bookstores.filter(store => {
-            const hasGenre = genres.length === 0 || genres.some(g => store.departments?.includes(g));
-
-            // Перевірка чи входить книгарня в прямокутник координат
-            const lat = parseFloat(store.latitude);
-            const lng = parseFloat(store.longitude);
-            const isInBounds = !bounds || (
-                lat >= bounds.minLat && lat <= bounds.maxLat &&
-                lng >= bounds.minLng && lng <= bounds.maxLng
-            );
-
-            return hasGenre && isInBounds;
-        });
-
-        if (filtered.length === 0) {
-            const msg = await generateResponse('Нічого не знайдено за такими критеріями', { genres, bounds });
-            addMessage('assistant', msg + "\n\nСпробуйте змінити район або обрати інші жанри.");
-            setStep('collecting');
-            return;
-        }
-
-        // 2. Фільтр за часом
-        if (!timeInfo?.anyTime && timeInfo?.dayOsm) {
-            const from = timeToMinutes(timeInfo.timeFrom || "00:00");
-            const to = timeToMinutes(timeInfo.timeTo || "23:59");
-
-            const byTime = filtered.filter(store =>
-                storeWorksAt(store.hours, timeInfo.dayOsm, from, to)
-            );
-
-            if (byTime.length === 0) {
-                addMessage('assistant', "Книгарні у цьому районі є, але вони зачинені у вибраний час. Показати їх все одно?");
-                // Можна додати логіку пропозиції змінити час
-                filtered = filtered; // Залишаємо як є для наглядності
-            } else {
-                filtered = byTime;
-            }
-        }
-
-        // 3. Успішний результат
-        setMatchedStores(filtered);
-        setStep('sorting');
-
-        const msg = await generateResponse('Знайдено результати', { count: filtered.length });
-        addMessage('assistant',
-            `${msg}\n\nЯ знайшов **${filtered.length}** книгарень у вибраній локації.\n\nЯк їх відсортувати?`,
-            { showSortButtons: true }
-        );
-    };
-
-    // Крок 2: Сортування (без змін, тільки з логуванням)
-    const handleSorting = async (userText) => {
-        const lower = userText.toLowerCase();
-        const byDistance = lower.includes('відстан') || lower.includes('близьк') || lower.includes('геолок');
-        const byRating = lower.includes('рейтинг') || lower.includes('оцінк');
-
-        if (!byDistance && !byRating) {
-            addMessage('assistant', 'Оберіть: **за відстанню** чи **за рейтингом**?', { showSortButtons: true });
-            return;
-        }
-
-        if (byDistance) await sortByDistance();
-        else sortByRating();
-    };
-
-    const sortByDistance = async () => {
-        addMessage('assistant', 'Отримую вашу локацію... 📍');
-        try {
-            const perm = await Geolocation.requestPermissions();
-            if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
-                addMessage('assistant', 'Геолокацію не надано. Відсортую за рейтингом.');
-                sortByRating();
-                return;
-            }
-            const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 12000 });
+            const pos = await Geolocation.getCurrentPosition({ timeout: 8000 });
             const { latitude, longitude } = pos.coords;
-            setUserPosition([latitude, longitude]);
-
-            const sorted = [...matchedStores]
-                .filter(s => s.latitude && s.longitude)
-                .sort((a, b) =>
-                    haversineDistance(latitude, longitude, parseFloat(a.latitude), parseFloat(b.longitude)) -
-                    haversineDistance(latitude, longitude, parseFloat(b.latitude), parseFloat(b.longitude))
-                );
-
-            applyResults(sorted, 'distance', { latitude, longitude });
-        } catch (err) {
-            console.error('❌ Помилка геолокації:', err);
-            addMessage('assistant', 'Не вдалося отримати геолокацію. Відсортую за рейтингом.');
-            sortByRating();
+            const sorted = [...matchedStores].sort((a, b) =>
+                haversineDistance(latitude, longitude, parseFloat(a.latitude), parseFloat(a.longitude)) -
+                haversineDistance(latitude, longitude, parseFloat(b.latitude), parseFloat(b.longitude))
+            );
+            finishSearch(sorted, 'distance', [latitude, longitude]);
+        } catch {
+            addMessage('assistant', aiT.locDenied);
+            handleSortByRating();
         }
     };
 
-    const sortByRating = () => {
-        const sorted = [...matchedStores].sort((a, b) =>
-            (b.averageRating || 0) - (a.averageRating || 0)
-        );
-        applyResults(sorted, 'rating', null);
+    const handleSortByRating = () => {
+        const sorted = [...matchedStores].sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+        finishSearch(sorted, 'rating', null);
     };
 
-    const applyResults = async (sorted, sortType, geoData) => {
-        const { genres, timeInfo } = collectedData;
+    const finishSearch = async (sorted, sortType, coords) => {
         onApplyFilters({
-            departments: genres,
-            filterDay: timeInfo?.anyTime ? '' : (timeInfo?.dayOsm || ''),
-            timeFrom: timeInfo?.anyTime ? '' : (timeInfo?.timeFrom || ''),
-            timeTo: timeInfo?.anyTime ? '' : (timeInfo?.timeTo || ''),
+            departments: collectedData.genres,
+            filterDay: collectedData.timeInfo?.dayOsm || '',
+            timeFrom: collectedData.timeInfo?.timeFrom || '',
+            timeTo: collectedData.timeInfo?.timeTo || '',
             sortedStores: sorted,
             sortType,
-            userPosition: geoData ? [geoData.latitude, geoData.longitude] : null,
+            userPosition: coords
         });
 
-        const msg = await generateResponse(
-            `Результати готові, відсортовано за ${sortType === 'distance' ? 'відстанню' : 'рейтингом'}`,
-            { count: sorted.length, sortType }
-        );
-
-        addMessage('assistant', msg + '\n\nФільтри застосовано! Дивіться результати нижче 👇', {
+        const aiMsg = await generateAIResponse('ready', { count: sorted.length });
+        addMessage('assistant', `${aiMsg}\n\n${aiT.filtersApplied}`, {
             showResults: true,
             stores: sorted.slice(0, 3),
             sortType,
-            userPosition: geoData,
+            userPosition: coords
         });
-
         setStep('done');
     };
 
     const handleReset = () => {
-        setMessages([{
-            role: 'assistant',
-            text: `Починаємо спочатку! 🔄\n\nНапишіть мені:\n• Які книги або жанри вас цікавлять?\n• В який час плануєте відвідати (або "час неважливий")?`,
-        }]);
+        setMessages([{ role: 'assistant', text: aiT.welcome }]);
         setStep('collecting');
         setCollectedData({ genres: [], timeInfo: null });
         setMatchedStores([]);
@@ -424,142 +314,88 @@ export default function AIAssistant({ isOpen, onClose, bookstores, onApplyFilter
 
     if (!isOpen) return null;
 
-    const isDark = theme === 'dark';
-
     return (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div className={`w-full sm:max-w-lg h-[90vh] sm:h-[600px] flex flex-col rounded-t-2xl sm:rounded-2xl shadow-2xl transition-colors ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
-                {/* Хедер */}
+                {/* Header */}
                 <div className={`flex items-center justify-between px-4 py-3 rounded-t-2xl border-b ${isDark ? 'bg-indigo-900 border-gray-700' : 'bg-indigo-600'}`}>
                     <div className="flex items-center gap-2 text-white">
                         <Bot size={22} />
-                        <span className="font-semibold">AI-асистент</span>
-                        <span className="text-xs opacity-70">Gemini</span>
+                        <span className="font-semibold">{language === 'uk' ? 'AI-асистент' : 'AI Assistant'}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        {step === 'done' && (
-                            <button onClick={handleReset}
-                                className="text-xs text-white/80 hover:text-white border border-white/30 rounded-lg px-2 py-1 transition">
-                                Новий пошук
-                            </button>
-                        )}
-                        <button onClick={onClose} className="text-white/80 hover:text-white transition">
-                            <X size={22} />
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => {
+                            handleReset(); // Скидаємо чат
+                            onClose();     // Закриваємо
+                        }}
+                        className="text-white/80 hover:text-white"
+                    >
+                        <X size={22} />
+                    </button>
                 </div>
 
-                {/* Повідомлення */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                {/* Messages Area */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.map((msg, i) => (
                         <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role === 'assistant' && (
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isDark ? 'bg-indigo-700' : 'bg-indigo-100'}`}>
-                                    <Bot size={14} className={isDark ? 'text-indigo-200' : 'text-indigo-600'} />
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-indigo-700' : 'bg-indigo-100'}`}>
+                                    <Bot size={16} className={isDark ? 'text-indigo-200' : 'text-indigo-600'} />
                                 </div>
                             )}
-                            <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${msg.role === 'user'
-                                ? isDark ? 'bg-indigo-700 text-white' : 'bg-indigo-600 text-white'
-                                : isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-100 text-gray-900'
-                                }`}>
-                                <p className="whitespace-pre-line leading-relaxed">
-                                    {msg.text.split(/\*\*(.+?)\*\*/g).map((part, j) =>
-                                        j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-                                    )}
-                                </p>
-
+                            <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${msg.role === 'user' ? (isDark ? 'bg-indigo-700 text-white' : 'bg-indigo-600 text-white') : (isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-100 text-gray-900')}`}>
+                                <p className="whitespace-pre-line">{msg.text}</p>
                                 {msg.showSortButtons && (
                                     <div className="flex gap-2 mt-3">
-                                        <button onClick={sortByDistance} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                                            <MapPin size={13} /> За відстанню
+                                        <button onClick={handleSortByDistance} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                            <MapPin size={13} /> {aiT.sortByDist}
                                         </button>
-                                        <button onClick={sortByRating} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                                            <Star size={13} /> За рейтингом
+                                        <button onClick={handleSortByRating} className="flex-1 flex items-center justify-center gap-1 py-2 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                            <Star size={13} /> {aiT.sortByRate}
                                         </button>
                                     </div>
                                 )}
-
-                                {msg.showResults && msg.stores?.length > 0 && (
-                                    <div className="mt-3 space-y-2">
-                                        <p className="text-xs font-semibold opacity-70">Топ результати:</p>
+                                {msg.showResults && (
+                                    <div className="mt-3 space-y-2 pt-2 border-t border-black/5">
+                                        <p className="text-[10px] font-bold uppercase opacity-50">{aiT.topResults}</p>
                                         {msg.stores.map((s, j) => (
-                                            <div key={j} className={`rounded-lg px-3 py-2 text-xs ${isDark ? 'bg-gray-700' : 'bg-white border border-gray-200'}`}>
-                                                <p className="font-semibold">{j + 1}. {s.name}</p>
-                                                <p className="opacity-70 mt-0.5">{s.address}</p>
-                                                {msg.sortType === 'rating' && s.averageRating && (
-                                                    <p className="text-yellow-500 mt-0.5">★ {s.averageRating}</p>
-                                                )}
+                                            <div key={j} className={`rounded-xl px-3 py-2 text-xs ${isDark ? 'bg-gray-700/50' : 'bg-white shadow-sm border border-gray-100'}`}>
+                                                <p className="font-bold">{s.name}</p>
                                                 {msg.sortType === 'distance' && msg.userPosition && s.latitude && (
-                                                    <p className="opacity-70 mt-0.5">
-                                                        {(haversineDistance(
-                                                            msg.userPosition[0], msg.userPosition[1],
-                                                            parseFloat(s.latitude), parseFloat(s.longitude)
-                                                        ) / 1000).toFixed(1)} км
-                                                    </p>
+                                                    <p className="opacity-60">{(haversineDistance(msg.userPosition[0], msg.userPosition[1], parseFloat(s.latitude), parseFloat(s.longitude)) / 1000).toFixed(1)} {aiT.km}</p>
                                                 )}
+                                                {msg.sortType === 'rating' && <p className="text-yellow-500 font-medium">★ {s.averageRating || 'N/A'}</p>}
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
-                            {msg.role === 'user' && (
-                                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                                    <User size={14} className={isDark ? 'text-gray-300' : 'text-gray-600'} />
-                                </div>
-                            )}
                         </div>
                     ))}
-
-                    {loading && (
-                        <div className="flex gap-2 justify-start">
-                            <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isDark ? 'bg-indigo-700' : 'bg-indigo-100'}`}>
-                                <Bot size={14} className={isDark ? 'text-indigo-200' : 'text-indigo-600'} />
-                            </div>
-                            <div className={`rounded-2xl px-4 py-3 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                                <Loader2 size={16} className="animate-spin text-indigo-500" />
-                            </div>
-                        </div>
-                    )}
+                    {loading && <div className="flex justify-center"><Loader2 className="animate-spin text-indigo-500" /></div>}
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Поле вводу */}
-                {step !== 'done' && (
-                    <div className={`px-4 py-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                {/* Input Area */}
+                <div className={`p-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                    {step === 'done' ? (
+                        <button onClick={handleReset} className="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition">{aiT.startAgain}</button>
+                    ) : (
                         <div className="flex gap-2">
                             <input
                                 type="text"
                                 value={input}
                                 onChange={e => setInput(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                                placeholder="Напишіть повідомлення..."
-                                disabled={loading}
-                                className={`flex-1 px-4 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${isDark
-                                    ? 'bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400'
-                                    : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400'
-                                    }`}
+                                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                                placeholder={aiT.placeholder}
+                                className={`flex-1 px-4 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-gray-50 border-gray-300'}`}
                             />
-                            <button
-                                onClick={handleSend}
-                                disabled={!input.trim() || loading}
-                                className={`p-2.5 rounded-xl transition ${input.trim() && !loading
-                                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                    : isDark ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
-                                    }`}
-                            >
+                            <button onClick={handleSend} disabled={loading || !input.trim()} className="p-3 bg-indigo-600 text-white rounded-xl disabled:opacity-50">
                                 <Send size={18} />
                             </button>
                         </div>
-                    </div>
-                )}
-
-                {step === 'done' && (
-                    <div className={`px-4 py-3 border-t text-center ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                        <button onClick={handleReset} className="text-sm text-indigo-500 hover:text-indigo-400 transition">
-                            🔄 Почати новий пошук
-                        </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
