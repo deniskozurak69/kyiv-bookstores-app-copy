@@ -343,9 +343,18 @@ const termsContent = {
     ]
 };
 
+// ─── SCROLL-TO-TOP HOOK ───────────────────────────────────────────────────────
+
+function useScrollToTop() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+}
+
 // ─── SUB-PAGES ────────────────────────────────────────────────────────────────
 
 function TermsPage({ onBack }) {
+    useScrollToTop();
     const [lang, setLang] = useState('ua');
     const content = termsContent[lang];
 
@@ -372,7 +381,7 @@ function TermsPage({ onBack }) {
                         <span>{lang === 'ua' ? 'Правила використання' : 'Usage Rules'}</span>
                     </div>
                     <p className="text-[11px] text-blue-700 opacity-80 tracking-widest uppercase">
-                        {lang === 'ua' ? 'Чинні з 1 травня 2025' : 'Effective May 1, 2025'}
+                        {lang === 'ua' ? 'Чинні з 1 травня 2026' : 'Effective May 1, 2026'}
                     </p>
                 </div>
 
@@ -398,6 +407,7 @@ function TermsPage({ onBack }) {
 }
 
 function PrivacyPage({ onBack }) {
+    useScrollToTop();
     const [lang, setLang] = useState('ua');
     const content = privacyContent[lang];
 
@@ -424,7 +434,7 @@ function PrivacyPage({ onBack }) {
                         <span>{lang === 'ua' ? 'Захист ваших даних' : 'User Data Protection'}</span>
                     </div>
                     <p className="text-[11px] text-indigo-700 opacity-80 uppercase tracking-widest">
-                        {lang === 'ua' ? 'Дата набрання чинності: 1 травня 2025' : 'Effective date: May 1, 2025'}
+                        {lang === 'ua' ? 'Дата набрання чинності: 1 травня 2026' : 'Effective date: May 1, 2026'}
                     </p>
                 </div>
 
@@ -450,6 +460,8 @@ function PrivacyPage({ onBack }) {
 }
 
 function EULAPage({ onBack }) {
+    useScrollToTop();
+
     return (
         <div className="min-h-screen bg-white pb-10">
             <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
@@ -486,6 +498,8 @@ function EULAPage({ onBack }) {
 }
 
 function SectionPage({ section, onBack }) {
+    useScrollToTop();
+
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* ШАПКА */}
@@ -539,7 +553,9 @@ function SectionPage({ section, onBack }) {
 }
 
 function FAQPage({ onBack }) {
+    useScrollToTop();
     const [open, setOpen] = useState(null);
+
     return (
         <div className="min-h-screen bg-gray-50 pb-10">
             <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shadow-sm">
@@ -588,12 +604,32 @@ export default function GuidePage({ onBack }) {
     const [activePage, setActivePage] = useState(null);
     const [activeTab, setActiveTab] = useState("gallery");
 
+    // Saved scroll position for the main page
+    const savedScrollY = useRef(0);
+
     // Refs for each anchor section
     const sectionRefs = {
         gallery: useRef(null),
         video: useRef(null),
         instructions: useRef(null),
         support: useRef(null),
+    };
+
+    // Navigate to a sub-page: save current scroll position first
+    const navigateTo = (page) => {
+        savedScrollY.current = window.scrollY;
+        setActivePage(page);
+    };
+
+    // Go back to main page and restore scroll position
+    const handleBack = () => {
+        setActivePage(null);
+        // Restore after React re-renders the main page
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                window.scrollTo(0, savedScrollY.current);
+            });
+        });
     };
 
     // Scroll to section on tab click
@@ -604,6 +640,7 @@ export default function GuidePage({ onBack }) {
 
     // Update active tab on scroll via IntersectionObserver
     useEffect(() => {
+        if (activePage) return; // only observe when on main page
         const observers = [];
         Object.entries(sectionRefs).forEach(([id, ref]) => {
             if (!ref.current) return;
@@ -615,15 +652,15 @@ export default function GuidePage({ onBack }) {
             observers.push(obs);
         });
         return () => observers.forEach((o) => o.disconnect());
-    }, [activePage]); // re-run only when returning to main page
+    }, [activePage]);
 
     const activeSection = sections.find((s) => s.id === activePage);
 
-    if (activePage === "faq") return <FAQPage onBack={() => setActivePage(null)} />;
-    if (activePage === "eula") return <EULAPage onBack={() => setActivePage(null)} />;
-    if (activePage === "privacy") return <PrivacyPage onBack={() => setActivePage(null)} />;
-    if (activePage === "terms") return <TermsPage onBack={() => setActivePage(null)} />;
-    if (activeSection) return <SectionPage section={activeSection} onBack={() => setActivePage(null)} />;
+    if (activePage === "faq") return <FAQPage onBack={handleBack} />;
+    if (activePage === "eula") return <EULAPage onBack={handleBack} />;
+    if (activePage === "privacy") return <PrivacyPage onBack={handleBack} />;
+    if (activePage === "terms") return <TermsPage onBack={handleBack} />;
+    if (activeSection) return <SectionPage section={activeSection} onBack={handleBack} />;
 
     return (
         <div className="min-h-screen bg-gray-50 pb-10">
@@ -653,8 +690,8 @@ export default function GuidePage({ onBack }) {
                             key={item.id}
                             onClick={() => handleTabClick(item.id)}
                             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${activeTab === item.id
-                                    ? "bg-indigo-100 text-indigo-700"
-                                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                ? "bg-indigo-100 text-indigo-700"
+                                : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                                 }`}
                         >
                             {item.label}
@@ -774,7 +811,7 @@ export default function GuidePage({ onBack }) {
                     {sections.map((section) => (
                         <button
                             key={section.id}
-                            onClick={() => setActivePage(section.id)}
+                            onClick={() => navigateTo(section.id)}
                             className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform"
                         >
                             <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: section.bg, color: section.color }}>
@@ -795,7 +832,7 @@ export default function GuidePage({ onBack }) {
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-1">Підтримка та право</h2>
 
                 {/* FAQ */}
-                <button onClick={() => setActivePage("faq")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                <button onClick={() => navigateTo("faq")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-amber-50 text-amber-500"><HelpCircle size={20} /></div>
                     <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm">Часті питання</p>
@@ -805,7 +842,7 @@ export default function GuidePage({ onBack }) {
                 </button>
 
                 {/* PRIVACY POLICY */}
-                <button onClick={() => setActivePage("privacy")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                <button onClick={() => navigateTo("privacy")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-indigo-50 text-indigo-600"><Lock size={20} /></div>
                     <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm">Політика конфіденційності</p>
@@ -815,7 +852,7 @@ export default function GuidePage({ onBack }) {
                 </button>
 
                 {/* TERMS OF SERVICE */}
-                <button onClick={() => setActivePage("terms")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
+                <button onClick={() => navigateTo("terms")} className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600"><FileText size={20} /></div>
                     <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm">Умови надання послуг</p>
@@ -825,7 +862,7 @@ export default function GuidePage({ onBack }) {
                 </button>
 
                 {/* EULA */}
-                <button onClick={() => setActivePage("eula")} className="w-full bg-indigo-50/30 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left group active:scale-95 transition-transform">
+                <button onClick={() => navigateTo("eula")} className="w-full bg-indigo-50/30 border border-indigo-100 rounded-2xl p-4 shadow-sm flex items-center gap-4 text-left group active:scale-95 transition-transform">
                     <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-white text-indigo-600 shadow-sm"><ShieldCheck size={20} /></div>
                     <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm group-hover:text-indigo-700 transition-colors">Ліцензійна угода (EULA)</p>
